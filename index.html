@@ -257,6 +257,229 @@ body{
  display:none;
 }
 
+
+/* Startseite: Lernpfad */
+#s0 .main{
+ flex:1;
+ display:grid;
+ grid-template-columns:270px 1fr;
+ gap:22px;
+ min-height:0;
+}
+#s0 .video{height:auto;aspect-ratio:16/9}
+.journey{
+ position:relative;
+ padding:18px 20px;
+ overflow:hidden;
+}
+.learningPath{
+ position:relative;
+ height:372px;
+ margin-top:0;
+}
+.pathSvg{
+ position:absolute;
+ inset:0;
+ width:100%;
+ height:100%;
+ pointer-events:none;
+ z-index:1;
+}
+.pathSvg path{
+ stroke:var(--terracotta);
+ stroke-width:2.3;
+ fill:none;
+ stroke-dasharray:7 6;
+ opacity:.48;
+}
+.stationGrid{display:none}
+.pathStation{
+ position:absolute;
+ width:166px;
+ padding:13px 14px 14px;
+ border:1.5px solid var(--ink);
+ border-radius:10px;
+ box-shadow:2px 2px 0 rgba(42,33,24,.65),0 4px 14px rgba(42,33,24,.14);
+ cursor:pointer;
+ background:var(--paper);
+ z-index:3;
+ transition:transform .15s ease, box-shadow .15s ease;
+}
+.pathStation:hover{
+ transform:translateY(-2px) rotate(0deg)!important;
+ box-shadow:3px 4px 0 rgba(42,33,24,.65),0 8px 18px rgba(42,33,24,.18);
+}
+.pathStation.accent{
+ background:var(--terracotta);
+ color:var(--paper);
+ border-color:#5C3300;
+}
+.pathStation .stationTitle{
+ font-family:'Caveat',cursive;
+ font-size:26px;
+ line-height:1;
+ color:var(--ink);
+ margin-bottom:8px;
+}
+.pathStation.accent .stationTitle{color:var(--paper)}
+.pathStation p{
+ font-size:11.2px;
+ line-height:1.28;
+ color:var(--muted);
+}
+.pathStation.accent p{color:rgba(247,242,232,.88)}
+.pathNum{
+ position:absolute;
+ right:-10px;
+ top:-12px;
+ width:27px;
+ height:27px;
+ border-radius:50%;
+ background:var(--terracotta);
+ color:var(--paper);
+ border:1.5px solid var(--ink);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-family:'Playfair Display',serif;
+ font-weight:700;
+ font-size:13px;
+}
+.pathStation.accent .pathNum{
+ background:var(--paper);
+ color:var(--terracotta);
+}
+.path1{left:34px;top:32px;transform:rotate(-2.5deg)}
+.path2{left:286px;top:84px;transform:rotate(1.5deg)}
+.path3{left:370px;top:218px;transform:rotate(-1.5deg)}
+.path4{left:106px;top:224px;transform:rotate(2deg)}
+.pathHint{
+ position:absolute;
+ left:252px;
+ top:183px;
+ width:138px;
+ font-family:'Caveat',cursive;
+ color:var(--terracotta);
+ font-size:23px;
+ line-height:1.05;
+ transform:rotate(-8deg);
+ z-index:2;
+ opacity:.9;
+}
+
+
+/* Etappe 1: Kachelinteraktionen */
+.tileLinks{
+ display:flex;
+ flex-direction:column;
+ gap:5px;
+ margin-top:7px;
+}
+.tileLinks a{
+ font-size:10.6px;
+ color:var(--terracotta);
+ font-weight:700;
+ text-decoration:none;
+ border-bottom:1px solid rgba(147,81,0,.28);
+ width:max-content;
+ max-width:100%;
+}
+.tileLinks a:hover{border-bottom-color:var(--terracotta)}
+.mailIconBtn{
+ margin-top:7px;
+ display:inline-flex;
+ align-items:center;
+ gap:5px;
+ border:1px solid rgba(181,137,42,.45);
+ background:rgba(255,253,248,.9);
+ color:var(--ink);
+ padding:5px 7px;
+ border-radius:9px;
+ font-family:'Source Sans 3',sans-serif;
+ font-size:10.6px;
+ font-weight:700;
+ cursor:pointer;
+ box-shadow:0 2px 8px rgba(42,33,24,.08);
+}
+.mailIconBtn:hover{background:var(--gold-soft)}
+.quoteLead{
+ font-family:'Playfair Display',serif;
+ font-size:15px;
+ line-height:1.38;
+ color:var(--ink);
+ margin-bottom:10px;
+}
+.modalBody .sourceNote{
+ font-size:11px;
+ color:var(--muted);
+ margin-top:10px;
+}
+.modalBody a{
+ color:var(--terracotta);
+ font-weight:700;
+ text-decoration:none;
+ border-bottom:1px solid rgba(147,81,0,.35);
+}
+.modalBody a:hover{border-bottom-color:var(--terracotta)}
+
+
+/* Etappe 1: neues kompaktes Layout */
+#s1 .body.leftWide{
+ grid-template-columns:1.05fr .95fr;
+ gap:16px;
+}
+#s1 .claim{
+ min-height:112px;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+}
+#s1 .grid4{
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+}
+#s1 .tile{
+ min-height:132px;
+ padding:13px 14px;
+}
+#s1 .rightEtappe1{
+ display:grid;
+ grid-template-rows:auto 1fr;
+ gap:12px;
+ min-height:0;
+}
+#s1 .rightEtappe1 .video{
+ width:100%;
+ aspect-ratio:16/9;
+ height:auto;
+}
+#s1 .argumentBox{
+ padding:15px 17px;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+}
+#s1 .argumentBox h3{
+ font-family:'Playfair Display',serif;
+ color:var(--terracotta);
+ font-size:17px;
+ margin-bottom:7px;
+}
+#s1 .argumentBox p{
+ font-size:12.4px;
+ line-height:1.42;
+ color:var(--muted);
+}
+#s1 .tile .icon{
+ font-size:20px;
+}
+#s1 .tile h4{
+ font-size:14.5px;
+}
+#s1 .tile p{
+ font-size:11.2px;
+}
+
 @media print{#nav,#homeBtn,#modalOverlay{display:none!important}}
 </style>
 </head>
@@ -278,13 +501,32 @@ body{
     <div class="note"><div class="kicker">Hinweis</div><p class="small">Ein selbstregulierter Input mit Kommentarvideos, Materialeinblicken und Popups.</p></div>
    </div>
    <div class="journey card">
-    <div class="pre">Ablauf</div>
-    <div class="stationGrid">
-     <div class="station" onclick="showSlide(1)"><div class="stationTitle">1 · Anlass</div><p>Warum beschäftigt mich selbstreguliertes Lernen gerade?</p></div>
-     <div class="station accent" onclick="showSlide(2)"><div class="stationTitle">2 · Erfahrungen</div><p>Sek-I-Lehre und die Frage nach produktiven Aufgaben.</p></div>
-     <div class="station" onclick="showSlide(3)"><div class="stationTitle">3 · Sortieren</div><p>Eine mögliche Antwort auf die Aufgabenfrage.</p></div>
-     <div class="station accent" onclick="showSlide(4)"><div class="stationTitle">4 · Projekt</div><p>Pilotierung, Kriterien, Plattform und mögliche Ausweitung.</p></div>
+    <div class="learningPath">
+      <svg class="pathSvg" viewBox="0 0 600 354" preserveAspectRatio="none">
+        <path d="M 105,82 Q 228,30 350,95 Q 505,172 456,250 Q 408,318 268,292 Q 92,258 110,165" />
+      </svg>
+      <div class="pathStation path1" onclick="showSlide(1)">
+        <div class="pathNum">1</div>
+        <div class="stationTitle">Anlass</div>
+        <p>Warum beschäftigt mich selbstreguliertes Lernen gerade?</p>
+      </div>
+      <div class="pathStation accent path2" onclick="showSlide(2)">
+        <div class="pathNum">2</div>
+        <div class="stationTitle">Erfahrungen</div>
+        <p>Sek-I-Lehre und die Frage nach produktiven Aufgaben.</p>
+      </div>
+      <div class="pathStation path3" onclick="showSlide(3)">
+        <div class="pathNum">3</div>
+        <div class="stationTitle">Sortieren</div>
+        <p>Kärtchen-Sortieraktivitäten als mögliche Antwort.</p>
+      </div>
+      <div class="pathStation accent path4" onclick="showSlide(4)">
+        <div class="pathNum">4</div>
+        <div class="stationTitle">Projekt</div>
+        <p>Pilotierung, Kriterien, Plattform und Ausblick.</p>
+      </div>
     </div>
+   </div>
    </div>
   </div>
  </div>
@@ -299,21 +541,27 @@ body{
     <div class="claim card"><div class="kicker">Ausgangspunkt</div><div class="big">SRL ist kein Randthema mehr – es taucht in Hochschule, Schule und Praktika gleichzeitig auf.</div></div>
     <div class="grid4">
      <div class="card tile"><div class="icon">🎓</div><h4>Hochschullehre</h4><p>Unsere Studiengänge setzen viel eigenständige Arbeit voraus.</p></div>
-     <div class="card tile"><div class="icon">🏫</div><h4>Schule</h4><p>Gezielte Lektionen für selbstreguliertes oder selbstorganisiertes Lernen nehmen zu.</p></div>
-     <div class="card tile"><div class="icon">👥</div><h4>Praktika</h4><p>Geeignete Aufgaben sind in diesen Phasen besonders anspruchsvoll.</p></div>
+     <div class="card tile"><div class="icon">🏫</div><h4>Schule</h4><p>SRL/SOL ist an Schulen zunehmend strukturell verankert.</p>
+       <div class="tileLinks">
+        <a href="https://ksreussbuehl.lu.ch/ausbildung/selbst_organisiertes_lernen" target="_blank" rel="noopener">KS Reussbühl: SOL</a>
+        <a href="https://schulenfueralle.lu.ch/page/planung" target="_blank" rel="noopener">Kanton Luzern: Planung</a>
+       </div>
+     </div>
+     <div class="card tile"><div class="icon">👥</div><h4>Praktika</h4><p>Offene Lernformen stellen hohe Anforderungen an Aufmerksamkeit, Orientierung und Selbststeuerung.</p>
+       <button class="mailIconBtn" onclick="openModal('praktikum')">✉️ Mailauszug</button>
+     </div>
      <div class="card tile"><div class="icon">🧩</div><h4>Aufgabenfrage</h4><p>Welche Aufgaben sind bearbeitbar und trotzdem kognitiv aktivierend?</p></div>
     </div>
    </div>
-   <div class="stack">
+   <div class="rightEtappe1">
     <div class="video videoEtappe1 embedded">
      <iframe src="https://www.youtube.com/embed/4okzWmV1Oco" title="Etappe 1 – Anlass" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
     </div>
-    <div class="popupRow">
-     <button class="popupBtn" onclick="openModal('praktikum')">✉️ Praktikums-Mail</button>
-     <button class="popupBtn" onclick="openModal('schule')">🏫 Schulische Kontexte</button>
-     <button class="popupBtn" onclick="openModal('frage')">❓ Leitfrage</button>
+    <div class="card argumentBox">
+     <div class="kicker">Zentrale Spannung</div>
+     <h3>Selbstregulierung soll stattfinden – und muss zugleich erst gelernt werden.</h3>
+     <p>Genau deshalb reicht es nicht, offene Phasen nur organisatorisch zu planen. Es braucht Aufgaben, die Orientierung geben, fachlich aktivieren und trotzdem eigenständiges Arbeiten ermöglichen.</p>
     </div>
-    <div class="note"><div class="kicker">Übergang</div><p class="small">Zentrale Spannung: Lernende sollen selbstreguliert arbeiten – und diese Kompetenzen zugleich erst entwickeln.</p></div>
    </div>
   </div>
  </div>
@@ -478,8 +726,14 @@ function playVideo(el){
  setTimeout(()=>el.style.outline='none',900)
 }
 const modalContent={
- praktikum:{title:"Praktikums-Mail",body:`<p>Hier kann die Mail bzw. ein anonymisierter Auszug eingebunden werden.</p><blockquote>Offene Unterrichtsformen stellen hohe Anforderungen an Aufmerksamkeit, Selbststeuerung und gedankliche Orientierung.</blockquote><p>Inhaltlicher Fokus: Welche Aufgabenformate eignen sich wirklich für solche Phasen?</p>`},
- schule:{title:"Schulische Kontexte",body:`<ul><li>SRL-Phasen auf Sekundarstufe 1</li><li>Lehrplan-21-Bezug</li><li>Projekte auf Sekundarstufe 2</li><li>neues Projekt zum begleiteten eigenständigen Lernen in unterschiedlichen Fächern</li></ul>`},
+ praktikum:{title:"Auszug aus einer Praktikums-Mail",body:`<p class="quoteLead">Ein Studierender im Berufspraktikum beschreibt sehr präzise, warum offene Lernformen anspruchsvoll sind.</p>
+<blockquote>Offene Unterrichtsformen stellen hohe Voraussetzungen an Aufmerksamkeit, Selbststeuerung und gedankliche Orientierung.</blockquote>
+<blockquote>Auffällig ist weniger eine klassische Störung des Unterrichts als vielmehr eine Form verschwindender Aufmerksamkeit.</blockquote>
+<blockquote>Viele Lernende bewegen sich heute gleichzeitig in mehreren digitalen Räumen. Dadurch wird es anspruchsvoller, über längere Zeit gemeinsam bei einer mathematischen Fragestellung zu bleiben.</blockquote>
+<blockquote>Welche Varianten von offenem Unterricht können echte Beteiligung und mathematische Vertiefung besonders fördern?</blockquote>
+<p>Für meine Leitfrage ist daran besonders spannend: Es geht nicht nur um Organisation offener Phasen, sondern um Aufgabenformen, die Aufmerksamkeit, Orientierung und fachliches Denken tatsächlich tragen.</p>
+<p class="sourceNote">Auszug anonymisiert und gekürzt; Mail aus einem Berufspraktikum.</p>`},
+ schule:{title:"Schulische Kontexte",body:`<p>Weiterführende Links:</p><ul><li><a href="https://ksreussbuehl.lu.ch/ausbildung/selbst_organisiertes_lernen" target="_blank" rel="noopener">Kantonsschule Reussbühl: Selbst organisiertes Lernen</a></li><li><a href="https://schulenfueralle.lu.ch/page/planung" target="_blank" rel="noopener">Kanton Luzern: Schulen für alle – Planung</a></li></ul>`},
  frage:{title:"Leitfrage",body:`<blockquote>Welche Aufgabenformate eignen sich für selbstregulierte Lernphasen, wenn sie fachlich aktivierend und nicht nur organisatorisch bearbeitbar sein sollen?</blockquote>`},
  materialSekI:{title:"Materialüberblick Sek-I-Lehre",body:`<p>Platzhalter für Screenshots/Links: Videos, Skripte, Aufgaben, Lernzielkärtchen, Mindmaps, ggf. Moodle-/H5P-Materialien.</p><div class="linkList"><a href="#">Screenshot: Materialübersicht</a><a href="#">Screenshot: Lernzielkärtchen</a><a href="#">Screenshot: Mindmap</a><a href="#">Screenshot: Aufgaben</a></div>`},
  materialSekII:{title:"Materialüberblick Sek-II-Fachdidaktik",body:`<p>Platzhalter für Screenshots/Links: Flipped-Classroom-Aufträge, vorbereitende Texte/Videos, Aufgabenproduktion, Auswertung in Präsenz.</p><div class="linkList"><a href="#">Screenshot: Wochenauftrag</a><a href="#">Screenshot: Vorbereitungsaufgabe</a><a href="#">Screenshot: Diskussionsgrundlage</a><a href="#">Screenshot: Auswertung</a></div>`},
