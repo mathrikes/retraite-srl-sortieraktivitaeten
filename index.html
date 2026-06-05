@@ -2148,6 +2148,65 @@ body{
 .farbBeige{background:#F3E8DA;border-top-color:#D0A548}
 .farbLila{background:#E8E1EE;border-top-color:#8B5DA6}
 
+
+/* NUR H5P-/Material-Popup: iframe-Inhalt etwas kleiner skalieren */
+#materialModal{
+ width:min(1180px,96vw) !important;
+ height:min(720px,90vh) !important;
+}
+#materialFrame{
+ width:112% !important;
+ height:112% !important;
+ transform:scale(.89) !important;
+ transform-origin:top left !important;
+ border:0 !important;
+ background:white !important;
+}
+
+
+/* NUR Popup Mindmap-Galerie */
+.mindmapGallery{
+ display:flex;
+ flex-direction:column;
+ gap:12px;
+}
+.mindmapIntro{
+ font-size:13.5px;
+ line-height:1.45;
+ color:var(--ink);
+ margin-bottom:2px;
+}
+.mindmapScroll{
+ display:flex;
+ gap:14px;
+ overflow-x:auto;
+ padding:4px 2px 10px;
+ scroll-snap-type:x proximity;
+}
+.mindmapFigure{
+ flex:0 0 88%;
+ background:var(--paper);
+ border:1px solid var(--line);
+ border-radius:14px;
+ box-shadow:0 4px 14px var(--shadow);
+ overflow:hidden;
+ scroll-snap-align:start;
+}
+.mindmapFigure img{
+ display:block;
+ width:100%;
+ height:420px;
+ object-fit:contain;
+ background:#fff;
+}
+.mindmapFigure figcaption{
+ padding:9px 12px;
+ font-size:12.5px;
+ color:var(--muted);
+ font-weight:700;
+ border-top:1px solid var(--line);
+}
+
 </style>
 </head>
 <body>
@@ -2553,6 +2612,32 @@ modalContent.bachelorLernziel={
   <div class="farbBox farbBeige"><h4>Sachverhalte &<br>Beweise</h4><p>Sie können den Sachverhalt beschreiben und den Beweis selbstständig wiedergeben.</p></div>
   <div class="farbBox farbLila"><h4>Verfahren &<br>Heuristiken</h4><p>Sie können das Verfahren, die Strategie bzw. die heuristische Methode an einer Aufgabe anwenden.</p></div>
  </div>
+</div>`
+};
+
+
+modalContent.bachelorMindmap={
+ title:"Mindmaps aus Sortieraktivitäten",
+ body:`<div class="mindmapGallery">
+  <p class="mindmapIntro">Aus der Sortiergrundlage entstehen unterschiedliche Ordnungen und fachliche Vernetzungen. Die Beispiele zeigen zuerst die Ausgangssituation und danach drei studentische Mindmap-Ausschnitte.</p>
+  <div class="mindmapScroll">
+    <figure class="mindmapFigure">
+      <img src="assets/mindmaps/01_ausgangssituation_sortiergrundlage.png" alt="Ausgangssituation der Sortiergrundlage">
+      <figcaption>1 · Ausgangssituation / Sortiergrundlage</figcaption>
+    </figure>
+    <figure class="mindmapFigure">
+      <img src="assets/mindmaps/02_studierenden_mindmap_gesamtuebersicht.png" alt="Gesamtübersicht einer Studierenden-Mindmap">
+      <figcaption>2 · Studierenden-Mindmap: Gesamtübersicht</figcaption>
+    </figure>
+    <figure class="mindmapFigure">
+      <img src="assets/mindmaps/03_studierenden_mindmap_ausschnitt_fachstruktur.png" alt="Ausschnitt einer Studierenden-Mindmap mit fachlicher Struktur">
+      <figcaption>3 · Ausschnitt: fachliche Strukturierung</figcaption>
+    </figure>
+    <figure class="mindmapFigure">
+      <img src="assets/mindmaps/04_studierenden_mindmap_ausschnitt_ordnung.png" alt="Ausschnitt einer Studierenden-Mindmap mit Ordnung und Vernetzung">
+      <figcaption>4 · Ausschnitt: Ordnung und Vernetzung</figcaption>
+    </figure>
+  </div>
 </div>`
 };
 
