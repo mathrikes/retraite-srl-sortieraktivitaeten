@@ -2149,7 +2149,19 @@ body{
 .farbLila{background:#E8E1EE;border-top-color:#8B5DA6}
 
 
-
+/* NUR H5P-/Material-Popup: iframe-Inhalt etwas kleiner skalieren */
+#materialModal{
+ width:min(1180px,96vw) !important;
+ height:min(720px,90vh) !important;
+}
+#materialFrame{
+ width:112% !important;
+ height:112% !important;
+ transform:scale(.89) !important;
+ transform-origin:top left !important;
+ border:0 !important;
+ background:white !important;
+}
 
 
 /* NUR Popup Mindmap-Galerie */
@@ -2196,10 +2208,56 @@ body{
 }
 
 
+/* NUR Popup-Darstellung: H5P kleiner rendern, Mindmap-Galerie kompakter */
+#materialModal{
+ width:min(1120px,96vw) !important;
+ height:min(680px,88vh) !important;
+ overflow:hidden !important;
+}
+#materialFrame{
+ width:130% !important;
+ height:130% !important;
+ transform:scale(.77) !important;
+ transform-origin:top left !important;
+ border:0 !important;
+ background:white !important;
+}
+.mindmapIntro{
+ font-size:12.8px !important;
+ line-height:1.35 !important;
+ margin-bottom:0 !important;
+}
+.mindmapScroll{
+ gap:12px !important;
+ padding:2px 2px 6px !important;
+}
+.mindmapFigure{
+ flex:0 0 86% !important;
+}
+.mindmapFigure img{
+ height:318px !important;
+ object-fit:contain !important;
+}
+.mindmapFigure figcaption{
+ padding:7px 10px !important;
+ font-size:11.8px !important;
+}
 
 
-
-
+/* NUR H5P-/Material-Popup: H5P stärker verkleinern, damit nichts abgeschnitten wird */
+#materialModal{
+ width:min(1120px,96vw) !important;
+ height:min(680px,88vh) !important;
+ overflow:hidden !important;
+}
+#materialFrame{
+ width:180% !important;
+ height:180% !important;
+ transform:scale(.555) !important;
+ transform-origin:top left !important;
+ border:0 !important;
+ background:white !important;
+}
 
 </style>
 </head>
@@ -2216,7 +2274,6 @@ body{
    <div class="stack">
     <!-- Später: data-video-url="https://youtu.be/..." ergänzen. Alle Videoflächen sind 16:9. -->
     <div class="video youtubePreview" data-video-id="YbWWsMbbAw8" data-video-title="Startvideo – Begrüssung" style="--yt-thumb:url('https://img.youtube.com/vi/YbWWsMbbAw8/hqdefault.jpg')" onclick="loadYouTube(this)">
-     <a class="ytDirect" href="https://youtu.be/YbWWsMbbAw8" target="_blank" rel="noopener" onclick="event.stopPropagation()">auf YouTube öffnen</a>
      <div class="play"></div>
      <div class="ytTitle"><span>Startvideo – Begrüssung</span><span class="tag">Video</span></div>
     </div>
@@ -2287,14 +2344,12 @@ body{
    </div>
    <div class="rightEtappe1">
     <div class="video videoEtappe1 youtubePreview" data-video-id="4okzWmV1Oco" data-video-title="Etappe 1 – Anlass" style="--yt-thumb:url('https://img.youtube.com/vi/4okzWmV1Oco/hqdefault.jpg')" onclick="loadYouTube(this)">
-     <a class="ytDirect" href="https://youtu.be/4okzWmV1Oco" target="_blank" rel="noopener" onclick="event.stopPropagation()">auf YouTube öffnen</a>
      <div class="play"></div>
      <div class="ytTitle"><span>Etappe 1 – Anlass</span><span class="tag">Video</span></div>
     </div>
     <div class="card argumentBox">
      <div class="kicker">Leitfrage</div>
-     <h3>Wie werden selbstregulierte Phasen fachlich produktiv?</h3>
-     <p>Aufgaben müssen Orientierung geben, fachlich aktivieren und eigenständiges Arbeiten ermöglichen.</p>
+     <h3>Erlebt ihr das in euren Fächern ähnlich?</h3>
     </div>
    </div>
   </div>
@@ -2308,7 +2363,6 @@ body{
   <div class="body etappe2Alt">
    <div class="topLine2">
     <div class="video refSize youtubePreview" data-video-id="5Hk52G-KJzY" data-video-title="Etappe 2 – Erfahrungen in der Sek-I-Lehre" style="--yt-thumb:url('https://img.youtube.com/vi/5Hk52G-KJzY/hqdefault.jpg')" onclick="loadYouTube(this)">
-     <a class="ytDirect" href="https://youtu.be/5Hk52G-KJzY" target="_blank" rel="noopener" onclick="event.stopPropagation()">auf YouTube öffnen</a>
      <div class="play"></div>
      <div class="ytTitle"><span>Etappe 2 – Sek-I-Lehre</span><span class="tag">Video</span></div>
     </div>
@@ -2343,7 +2397,7 @@ body{
       <p>Auch in der Sek-II-Fachdidaktik zeigt sich: Selbstreguliertes Lernen ist kein Selbstläufer. Das gemischte Feedback macht diese Spannung gut sichtbar.</p>
       <div class="popupRow" style="margin-top:9px"><button class="popupBtn" onclick="openModal('feedback')">💬 Sek-II-Feedbacks öffnen</button></div>
      </div>
-     <div class="finalQuestion"><div class="kicker">Fazit dieser Etappe</div><p>Welche Aufgabenformate bringen Lernende in selbstregulierten Phasen wirklich ins fachliche Tun?</p></div>
+     <div class="finalQuestion"><div class="kicker">Fazit dieser Etappe</div><p>Wie hoch ist der selbstregulierte Teil in euren Veranstaltungen und welche Herausforderungen erlebt ihr?</p></div>
    </div>
   </div>
  </div>
@@ -2369,7 +2423,7 @@ body{
     </div>
     <div class="card exampleBox3">
      <h3>Veranstaltungen in der Masterphase</h3>
-     <div class="miniText">In der Veranstaltung wurden diese Aktivitäten auf Zoom Whiteboards durchgeführt ohne direkte Ergebniskontrolle.</div>
+     <div class="miniText">Sortieraktivitäten dienen als Ergebnissicherung und als Anlass für fachliche Diskussionen.</div>
      <div class="pillRow">
       <button class="pillBtn" onclick="openMaterial('Tripel finden', 'h5p/tripel.html')">🔺 Tripel finden</button>
       <button class="pillBtn" onclick="openMaterial('Venndiagramm', 'h5p/venn.html')">⭕ Venndiagramm</button>
@@ -2394,7 +2448,6 @@ body{
 
    <div class="right3">
     <div class="video refSize youtubePreview" data-video-id="wYOcPjfDKQw" data-video-title="Etappe 3 – Kärtchen-Sortieraktivitäten" style="--yt-thumb:url('https://img.youtube.com/vi/wYOcPjfDKQw/hqdefault.jpg')" onclick="loadYouTube(this)">
-     <a class="ytDirect" href="https://youtu.be/wYOcPjfDKQw" target="_blank" rel="noopener" onclick="event.stopPropagation()">auf YouTube öffnen</a>
      <div class="play"></div>
      <div class="ytTitle"><span>Etappe 3 – Sortieraktivitäten</span><span class="tag">Video</span></div>
     </div>
@@ -2416,7 +2469,6 @@ body{
 
    <div class="top4b">
     <div class="video refSize youtubePreview" data-video-id="7aZIH6fIQVg" data-video-title="Etappe 4 – Projektidee und Ausblick" style="--yt-thumb:url('https://img.youtube.com/vi/7aZIH6fIQVg/hqdefault.jpg')" onclick="loadYouTube(this)">
-     <a class="ytDirect" href="https://youtu.be/7aZIH6fIQVg" target="_blank" rel="noopener" onclick="event.stopPropagation()">auf YouTube öffnen</a>
      <div class="play"></div>
      <div class="ytTitle"><span>Etappe 4 – Projektidee</span><span class="tag">Video</span></div>
     </div>
@@ -2455,7 +2507,7 @@ body{
 
    <div class="question4b questionFull4b">
       <div class="kicker">Frage an euch</div>
-      <div class="script">Was braucht es, damit Sortieraktivitäten nicht beim Material enden, sondern fachliches Gespräch auslösen?</div>
+      <div class="script">Seht ihr auch in euren Fächern Potential für solche Sortieraktivitäten? Oder gibt es andere passendere Formate?</div>
    </div>
 
   </div>
@@ -2479,7 +2531,6 @@ body{
 
    <div class="abschlussSide2">
     <div class="video medium youtubePreview" data-video-id="__hal_X1TBY" data-video-title="Abschluss – Übergang in die Diskussion" style="--yt-thumb:url('https://img.youtube.com/vi/__hal_X1TBY/hqdefault.jpg')" onclick="loadYouTube(this)">
-     <a class="ytDirect" href="https://youtu.be/__hal_X1TBY" target="_blank" rel="noopener" onclick="event.stopPropagation()">auf YouTube öffnen</a>
      <div class="play"></div>
      <div class="ytTitle"><span>Abschluss – Übergang in die Diskussion</span><span class="tag">Video</span></div>
     </div>
