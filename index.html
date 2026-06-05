@@ -15,10 +15,10 @@
  --blue:#DCEAF4;--green:#DDEAD8;--yellow:#F4E7B9;--purple:#E9DDF1;--rose:#F0D9D2
 }
 body{
- background:#D7CCB9;min-height:100vh;display:flex;align-items:center;justify-content:center;
- font-family:'Source Sans 3',sans-serif;overflow:hidden;padding:16px 16px 84px
+ background:var(--bg);min-height:100vh;
+ font-family:'Source Sans 3',sans-serif;overflow:hidden;
 }
-#scaler{position:fixed;width:960px;height:540px;transform-origin:top left;box-shadow:0 10px 34px rgba(42,33,24,.22)}
+#scaler{position:fixed;width:960px;height:540px;transform-origin:center center;}
 .slide{display:none;position:absolute;inset:0;background:var(--bg);overflow:hidden}
 .slide.active{display:block}
 .wrap{position:absolute;inset:0;padding:25px 34px 34px;display:flex;flex-direction:column;gap:13px}
@@ -2594,7 +2594,7 @@ let current=0;
 function showSlide(i){current=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,idx)=>s.classList.toggle('active',idx===current));document.getElementById('counter').textContent=labels[current];document.getElementById('prevBtn').disabled=current===0;document.getElementById('nextBtn').disabled=current===slides.length-1;document.getElementById('homeBtn').style.display=current===0?'none':'block';closeModal()}
 function nextSlide(){showSlide(current+1)}function prevSlide(){showSlide(current-1)}
 window.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='PageDown')nextSlide();if(e.key==='ArrowLeft'||e.key==='PageUp')prevSlide();if(e.key==='Escape'){closeModal();closeMaterial();}});
-function fit(){const navSpace=96,margin=32;const availableW=Math.max(320,window.innerWidth-margin);const availableH=Math.max(240,window.innerHeight-navSpace);const s=Math.min(availableW/960,availableH/540);const el=document.getElementById('scaler');el.style.transform=`translate(-50%,-50%) scale(${s})`;el.style.left='50%';el.style.top=`calc(50% - ${navSpace/4}px)`}
+function fit(){const navH=60;const availableW=Math.max(320,window.innerWidth);const availableH=Math.max(240,window.innerHeight-navH);const s=Math.min(availableW/960,availableH/540);const el=document.getElementById('scaler');el.style.left='50%';el.style.top=`calc(50% - ${navH/2}px)`;el.style.transform=`translate(-50%,-50%) scale(${s})`}
 window.addEventListener('resize',fit);fit();showSlide(0);
 
 function loadYouTube(el){
