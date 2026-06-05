@@ -2086,6 +2086,68 @@ body{
  letter-spacing:.2px !important;
 }
 
+
+/* NUR Popup Farbkodierung */
+.farbPopup{
+ display:flex;
+ flex-direction:column;
+ gap:0;
+ border-radius:14px;
+ overflow:hidden;
+ border:1px solid var(--line);
+ background:var(--paper);
+}
+.farbIntro{
+ background:#F7BCD3;
+ padding:16px 18px 18px;
+ position:relative;
+}
+.farbTop{
+ position:absolute;
+ left:0;
+ right:0;
+ top:0;
+ height:6px;
+ background:#A00055;
+}
+.farbIntro h3{
+ font-family:'Source Sans 3',sans-serif;
+ font-size:18px;
+ letter-spacing:1px;
+ color:var(--ink);
+ margin:7px 0 10px;
+}
+.farbIntro p{
+ font-size:15px;
+ line-height:1.45;
+ color:var(--ink);
+}
+.farbGrid{
+ display:grid;
+ grid-template-columns:1fr 1fr 1fr 1fr;
+}
+.farbBox{
+ min-height:185px;
+ padding:15px 14px;
+ border-top:6px solid rgba(47,38,28,.15);
+}
+.farbBox h4{
+ font-family:'Source Sans 3',sans-serif;
+ font-size:16px;
+ line-height:1.25;
+ color:var(--ink);
+ margin-bottom:14px;
+}
+.farbBox p{
+ font-size:14px;
+ line-height:1.42;
+ color:var(--ink);
+}
+.farbBlau{background:#BFE2F7;border-top-color:#1B8BB7}
+.farbGruen{background:#D9F0E5;border-top-color:#12976C}
+.farbBeige{background:#F3E8DA;border-top-color:#D0A548}
+.farbLila{background:#E8E1EE;border-top-color:#8B5DA6}
+
 </style>
 </head>
 <body>
@@ -2247,8 +2309,8 @@ body{
      <div class="miniText">Lernzielkärtchen werden nicht nur gesammelt, sondern zunehmend geordnet, verknüpft und strukturiert.</div>
      <div class="pillRow">
       <button class="pillBtn" onclick="openModal('bachelorLernziel')">🃏 Farbkodierung</button>
-      <button class="pillBtn" onclick="openModal('bachelorFarbe')">🎨 Sortieren nach Farbe</button>
-      <button class="pillBtn" onclick="openModal('bachelorKapitel')">📚 Sortieren nach Kapitel</button>
+      <button class="pillBtn" onclick="openMaterial('Sortieren nach Farbe','h5p/nachfarben.html')">🎨 Sortieren nach Farbe</button>
+      <button class="pillBtn" onclick="openMaterial('Sortieren nach Kapitel','h5p/nachkapitel.html')">📚 Sortieren nach Kapitel</button>
       <button class="pillBtn" onclick="openModal('bachelorMindmap')">🧠 Mindmap</button>
      </div>
     </div>
@@ -2474,6 +2536,24 @@ modalContent.weiterentwicklung={
  title:'Weiterentwicklung: Plattform und Weiterbildung',
  body:`<div class="feedbackCard good"><div class="fbLabel">Plattform</div><p>Sortieraktivitäten sollen auffindbar, anpassbar und mit didaktischen Hinweisen verbunden sein – nicht nur als Materialsammlung, sondern als Ausgangspunkt für eigene Entwicklung.</p></div>
  <div class="feedbackCard method"><div class="fbLabel">Weiterbildung</div><p>Entscheidend ist der Schritt zurück ins Klassengespräch: Sortierungen vergleichen, Begründungen sichtbar machen und aus unterschiedlichen Ordnungen fachliche Klärung entwickeln.</p></div>`
+};
+
+
+modalContent.bachelorLernziel={
+ title:"Farbkodierung",
+ body:`<div class="farbPopup">
+ <div class="farbIntro">
+  <div class="farbTop"></div>
+  <h3>Didaktische Grundlagen</h3>
+  <p>Sie können den Hintergrund des didaktischen Prinzips oder Ordnungsmusters erklären und eine Aufgabe anhand dieser Grundlagen analysieren.</p>
+ </div>
+ <div class="farbGrid">
+  <div class="farbBox farbBlau"><h4>Begriffe &<br>Definitionen</h4><p>Sie können den mathematischen Begriff mathematisch präzise und korrekt beschreiben und ein Beispiel nennen.</p></div>
+  <div class="farbBox farbGruen"><h4>Repräsentationen &<br>Zugänge</h4><p>Sie können die Repräsentation erzeugen, kennen den mathematischen Hintergrund und können Chancen und Restriktionen benennen.</p></div>
+  <div class="farbBox farbBeige"><h4>Sachverhalte &<br>Beweise</h4><p>Sie können den Sachverhalt beschreiben und den Beweis selbstständig wiedergeben.</p></div>
+  <div class="farbBox farbLila"><h4>Verfahren &<br>Heuristiken</h4><p>Sie können das Verfahren, die Strategie bzw. die heuristische Methode an einer Aufgabe anwenden.</p></div>
+ </div>
+</div>`
 };
 
 function openModal(key){const item=modalContent[key];if(!item)return;document.getElementById('modalTitle').innerHTML=item.title;document.getElementById('modalBody').innerHTML=item.body;document.getElementById('modalOverlay').style.display='flex'}
