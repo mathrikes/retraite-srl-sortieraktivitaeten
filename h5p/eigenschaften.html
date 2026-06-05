@@ -60,6 +60,88 @@ body{background:var(--bg);font-family:'Source Sans 3',sans-serif;color:var(--ink
 .sol-box.show{display:block}
 .sol-box strong{color:var(--ink);display:block;margin-bottom:5px}
 .sol-tag{display:inline-block;background:#DDEAD8;border-radius:4px;padding:1px 7px;font-size:10px;color:#2D6A3F;margin:2px 2px 2px 0}
+
+/* Suchkarten: oben als grössere Karten statt kleiner Pillen */
+.header{
+  display:grid !important;
+  grid-template-columns:auto 1fr auto !important;
+  grid-template-rows:auto auto !important;
+  align-items:start !important;
+  gap:8px 14px !important;
+  padding:10px 18px 12px !important;
+}
+
+.header h1{
+  grid-column:1 / 2 !important;
+  grid-row:1 !important;
+  font-size:18px !important;
+}
+
+.header .reset-btn{
+  grid-column:3 !important;
+  grid-row:1 !important;
+  justify-self:end !important;
+}
+
+.sc-nav{
+  grid-column:1 / 4 !important;
+  grid-row:2 !important;
+  display:grid !important;
+  grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
+  gap:10px !important;
+  width:100% !important;
+}
+
+.sc-tab{
+  border:1.5px solid var(--line) !important;
+  background:var(--paper) !important;
+  border-radius:12px !important;
+  padding:10px 12px !important;
+  min-height:70px !important;
+  font-size:11.2px !important;
+  line-height:1.22 !important;
+  color:var(--ink) !important;
+  text-align:left !important;
+  box-shadow:0 2px 8px var(--shadow) !important;
+  white-space:normal !important;
+}
+
+.sc-tab:hover{
+  background:var(--gold-soft) !important;
+  transform:translateY(-1px) !important;
+}
+
+.sc-tab.active{
+  background:var(--terracotta) !important;
+  color:var(--paper) !important;
+  border-color:var(--terracotta) !important;
+}
+
+.sc-tab .sc-small{
+  display:block !important;
+  font-size:9px !important;
+  letter-spacing:1.4px !important;
+  text-transform:uppercase !important;
+  font-weight:700 !important;
+  opacity:.75 !important;
+  margin-bottom:4px !important;
+}
+
+.sc-tab .sc-main{
+  display:block !important;
+  font-size:13px !important;
+  font-weight:700 !important;
+}
+
+/* Durch den höheren Header bleibt unten alles passend sichtbar */
+.layout{
+  grid-template-columns:1fr 285px !important;
+}
+
+.suchkarte p{
+  font-size:18px !important;
+}
+
 </style>
 </head>
 <body>
@@ -156,7 +238,7 @@ function buildAll() {
     const btn = document.createElement('button');
     btn.className = 'sc-tab';
     btn.id = 'tab-' + sc.id;
-    btn.innerHTML = sc.label;
+    btn.innerHTML = '<span class="sc-small">' + sc.label.split(' · ')[0] + '</span><span class="sc-main">' + sc.label.split(' · ')[1] + '</span>';
     btn.onclick = () => selectSC(sc.id);
     nav.appendChild(btn);
   });
