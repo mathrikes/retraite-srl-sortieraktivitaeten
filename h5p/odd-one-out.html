@@ -305,34 +305,34 @@ body {
 ══════════════════════════════════════════════════ */
 const TRIPEL = [
   {
-    cards: ["$y' = 3y$", "$y' = -2y$", "$y' = y + x$"],
+    cards: ["y' = 3y", "y' = −2y", "y' = y + x"],
     odd: 2,
-    reason: "Die ersten beiden sind <em>homogen</em> (rechte Seite nur abhängig von y, kein x-Term). $y' = y + x$ enthält $x$ und ist damit <em>inhomogen</em>.",
+    reason: "Die ersten beiden sind <em>homogen</em> (rechte Seite nur abhängig von y, kein x-Term). y' = y + x enthält x und ist damit <em>inhomogen</em>.",
     alt: "Alternative Lesart: Alle drei sind linear — aber nur zwei sind separierbar ohne Substitution."
   },
   {
-    cards: ["$y' = y^2$", "$y' = \\sin(y)$", "$y' = 3y$"],
+    cards: ["y' = y²", "y' = sin(y)", "y' = 3y"],
     odd: 2,
-    reason: "$y' = y^2$ und $y' = \\sin(y)$ sind <em>nichtlinear</em> in $y$. $y' = 3y$ ist <em>linear</em> — das ist der Ausreisser.",
+    reason: "y' = y² und y' = sin(y) sind <em>nichtlinear</em> in y. y' = 3y ist <em>linear</em> — das ist der Ausreisser.",
     alt: "Alternative: Alle drei sind homogen. Und alle drei sind mit TdV lösbar — also wäre keine ein Ausreisser nach diesem Kriterium."
   },
   {
-    cards: ["$(y')^2 = y$", "$\\cos(y') = xy$", "$(y')^2 - y' + 1 = 0$"],
+    cards: ["(y')² = y", "cos(y') = x·y", "(y')² − y' + 1 = 0"],
     odd: 0,
-    reason: "Alle drei sind <em>nicht explizit</em> — $y'$ lässt sich nicht direkt isolieren. Aber $(y')^2 = y$ lässt sich noch nach $y'$ auflösen: $y' = \\pm\\sqrt{y}$. Die anderen zwei können nicht aufgelöst werden.",
+    reason: "Alle drei sind <em>nicht explizit</em> — y' lässt sich nicht direkt isolieren. Aber (y')² = y lässt sich noch nach y' auflösen: y' = ±√y. Die anderen zwei können nicht aufgelöst werden.",
     alt: "Diskussion: Ist 'nicht explizit lösbar' und 'nicht explizit' dasselbe? Was heisst 'explizit' genau?"
   },
   {
-    cards: ["$y' = x^2$", "$y' = \\cos(x)$", "$y' = e^x + y$"],
+    cards: ["y' = x²", "y' = cos(x)", "y' = eˣ + y"],
     odd: 2,
-    reason: "Bei $y' = x^2$ und $y' = \\cos(x)$ hängt die rechte Seite <em>nur von $x$</em> ab — das sind direkt integrierbare DGLs, keine echte Kopplung. $y' = e^x + y$ hat einen $y$-Term und ist damit anders.",
+    reason: "Bei y' = x² und y' = cos(x) hängt die rechte Seite <em>nur von x</em> ab — das sind direkt integrierbare DGLs, keine echte Kopplung. y' = eˣ + y hat einen y-Term und ist damit anders.",
     alt: "Alle drei sind linear und explizit. Alternativlesart: die ersten zwei sind trivial lösbar, die dritte braucht VdK."
   },
   {
-    cards: ["$y'' + y = 0$", "$y'' + 2y' + y = 0$", "$y' = -y$"],
+    cards: ["y'' + y = 0", "y'' + 2y' + y = 0", "y' = −y"],
     odd: 2,
-    reason: "$y'' + y = 0$ und $y'' + 2y' + y = 0$ sind DGLs <em>zweiter Ordnung</em>. $y' = -y$ ist erste Ordnung — das ist der Ausreisser.",
-    alt: "Alle drei sind linear und homogen. Und alle drei haben $e^{-x}$ (oder Varianten davon) in der Lösung — interessante Verwandtschaft!"
+    reason: "y'' + y = 0 und y'' + 2y' + y = 0 sind DGLs <em>zweiter Ordnung</em>. y' = −y ist erste Ordnung — das ist der Ausreisser.",
+    alt: "Alle drei sind linear und homogen. Und alle drei haben e⁻ˣ (oder Varianten davon) in der Lösung — interessante Verwandtschaft!"
   },
 ];
 
@@ -352,7 +352,7 @@ function loadTripel(idx) {
   droppedId = null;
   dragging = null;
 
-  // Karten befüllen
+  // Karten befüllen — vollständig zurücksetzen
   for (let i = 0; i < 3; i++) {
     const el = document.getElementById('card-' + i);
     el.innerHTML = t.cards[i];
@@ -360,6 +360,8 @@ function loadTripel(idx) {
     el.className = 'dgl-card';
     el.draggable = true;
     el.style.display = '';
+    el.style.opacity = '';      // ← war das Problem
+    el.style.cssText = '';      // alle inline styles weg
     el.ondragstart = e => { dragging = i; el.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; };
     el.ondragend = () => { el.classList.remove('dragging'); dragging = null; };
   }
@@ -393,7 +395,6 @@ function loadTripel(idx) {
   document.getElementById('progress-fill').closest('.progress').style.display = '';
   document.getElementById('tripel-label').style.display = '';
 
-  MathJax.typesetPromise([document.getElementById('cards-row')]);
 }
 
 function handleDrop(cardIdx) {
@@ -428,8 +429,6 @@ function handleDrop(cardIdx) {
   rb.className = 'reason-reveal hidden';
   ab.innerHTML = t.alt ? `💬 ${t.alt}` : '';
   ra.style.visibility = 'visible';
-
-  MathJax.typesetPromise([drop, ra]);
 }
 
 function revealReason() {
