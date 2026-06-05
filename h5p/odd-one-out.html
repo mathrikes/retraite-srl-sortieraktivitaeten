@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odd One Out – DGL</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;600;700&family=Caveat:wght@500;600&display=swap');
+
+:root {
+  --bg: #F7F2E8; --paper: #FFFDF8; --ink: #2F261C; --muted: #6C5A49;
+  --gold: #B5892A; --gold-soft: #F0E0B0; --terracotta: #935100;
+  --line: #E0D5C0; --shadow: rgba(42,33,24,.14);
+  --green: #DDEAD8; --blue: #DCEAF4; --yellow: #F4E7B9;
+  --purple: #E9DDF1; --rose: #F0D9D2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  font-family: 'Source Sans 3', sans-serif;
+  color: var(--ink);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  flex: 0 0 auto;
+  padding: 10px 20px 8px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+.header h1 { font-family: 'Playfair Display', serif; font-size: 17px; }
+.header p  { font-size: 11.5px; color: var(--muted); }
+.header p strong { color: var(--terracotta); }
+
+.nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav button {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif;
+}
+.nav button:hover:not(:disabled) { background: var(--gold-soft); color: var(--ink); }
+.nav button:disabled { opacity: .35; cursor: default; }
+.nav .counter {
+  font-size: 11px;
+  color: var(--muted);
+  min-width: 50px;
+  text-align: center;
+}
+.nav .next-btn {
+  background: var(--terracotta);
+  color: var(--paper);
+  border-color: var(--terracotta);
+}
+.nav .next-btn:hover:not(:disabled) { background: #7a4400; }
+
+/* ── Tripel-Anzeige ────────────────────────────── */
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 30px;
+  min-height: 0;
+}
+
+.tripel-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.cards-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* DGL-Karte im Tripel */
+.dgl-card {
+  background: white;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  min-width: 130px;
+  max-width: 160px;
+  text-align: center;
+  font-size: 16px;
+  box-shadow: 0 3px 12px var(--shadow);
+  cursor: grab;
+  user-select: none;
+  transition: box-shadow .15s, transform .15s, border-color .2s, background .2s;
+  position: relative;
+}
+.dgl-card:hover { box-shadow: 0 6px 20px rgba(42,33,24,.22); transform: translateY(-2px); }
+.dgl-card.dragging { opacity: .4; cursor: grabbing; transform: scale(.95); }
+.dgl-card.highlight-odd {
+  border-color: var(--terracotta);
+  background: #FFF5EC;
+  box-shadow: 0 0 0 3px rgba(147,81,0,.15), 0 4px 16px var(--shadow);
+}
+.dgl-card.highlight-odd::after {
+  content: '✗ Ausreisser';
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: var(--terracotta);
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: .5px;
+}
+.dgl-card.checked-ok {
+  border-color: #5A9E6F;
+  background: #F0FAF3;
+}
+
+/* Drop-Zone: Ausreisser-Ablage */
+.odd-drop {
+  min-width: 150px;
+  min-height: 80px;
+  border: 2px dashed var(--line);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 16px;
+  color: var(--muted);
+  font-size: 11.5px;
+  transition: background .15s, border-color .15s;
+}
+.odd-drop .odd-icon { font-size: 24px; }
+.odd-drop.over { background: rgba(147,81,0,.07); border-color: var(--terracotta); color: var(--terracotta); }
+.odd-drop.filled { border-style: solid; border-color: var(--terracotta); background: #FFF5EC; }
+
+/* Begründung */
+.reason-area {
+  max-width: 560px;
+  width: 100%;
+}
+.reason-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.reason-reveal {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.5;
+  min-height: 44px;
+  cursor: pointer;
+  transition: background .15s;
+  position: relative;
+}
+.reason-reveal.hidden { color: transparent; background: var(--gold-soft); user-select: none; }
+.reason-reveal.hidden::after {
+  content: 'Tipp anzeigen →';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+.alternatives {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Fortschrittsbalken */
+.progress {
+  width: 100%;
+  max-width: 420px;
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--terracotta);
+  border-radius: 2px;
+  transition: width .4s ease;
+}
+
+/* Abschluss-Screen */
+.done-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+.done-screen.show { display: flex; }
+.done-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--ink);
+}
+.done-sub { font-size: 13px; color: var(--muted); line-height: 1.5; max-width: 380px; }
+.done-btn {
+  background: var(--terracotta);
+  color: var(--paper);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 24px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif;
+}
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <h1>❓ Odd One Out</h1>
+  <p>Zieht die DGL, die <strong>nicht zur Gruppe passt</strong>, in das Feld rechts.</p>
+  <div class="nav">
+    <button id="prev-btn" onclick="prevTripel()" disabled>← Zurück</button>
+    <span class="counter" id="counter">1 / 5</span>
+    <button class="next-btn" id="next-btn" onclick="nextTripel()">Weiter →</button>
+  </div>
+</div>
+
+<div class="stage" id="stage">
+  <!-- Tripel-Karten + Ablage -->
+  <div class="tripel-label" id="tripel-label">Tripel 1 von 5</div>
+
+  <div class="cards-row" id="cards-row">
+    <!-- 3 DGL-Karten -->
+    <div class="dgl-card" id="card-0" draggable="true"></div>
+    <div class="dgl-card" id="card-1" draggable="true"></div>
+    <div class="dgl-card" id="card-2" draggable="true"></div>
+
+    <!-- Trennlinie -->
+    <div style="width:2px;background:var(--line);align-self:stretch;border-radius:1px;"></div>
+
+    <!-- Ablage Ausreisser -->
+    <div class="odd-drop" id="odd-drop" data-zone="odd">
+      <span class="odd-icon">🚫</span>
+      <span>Hier ablegen</span>
+    </div>
+  </div>
+
+  <div class="progress"><div class="progress-fill" id="progress-fill" style="width:20%"></div></div>
+
+  <!-- Begründung -->
+  <div class="reason-area" id="reason-area" style="visibility:hidden">
+    <div class="reason-label">Begründung</div>
+    <div class="reason-reveal hidden" id="reason-box" onclick="revealReason()"></div>
+    <div class="alternatives" id="alternatives-box"></div>
+  </div>
+
+  <!-- Abschluss -->
+  <div class="done-screen" id="done-screen">
+    <div class="done-title">Alle Tripel sortiert! 🎉</div>
+    <div class="done-sub">Habt ihr bei jedem Tripel auch andere Begründungen gefunden? Oft gibt es mehr als eine richtige Antwort.</div>
+    <button class="done-btn" onclick="restart()">↺ Nochmal von vorne</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   TRIPEL-DATEN
+   odd: Index der "falschen" Karte (0-basiert)
+   alt: Alternative Lesarten (Diskussion)
+══════════════════════════════════════════════════ */
+const TRIPEL = [
+  {
+    cards: ["$y' = 3y$", "$y' = -2y$", "$y' = y + x$"],
+    odd: 2,
+    reason: "Die ersten beiden sind <em>homogen</em> (rechte Seite nur abhängig von y, kein x-Term). $y' = y + x$ enthält $x$ und ist damit <em>inhomogen</em>.",
+    alt: "Alternative Lesart: Alle drei sind linear — aber nur zwei sind separierbar ohne Substitution."
+  },
+  {
+    cards: ["$y' = y^2$", "$y' = \\sin(y)$", "$y' = 3y$"],
+    odd: 2,
+    reason: "$y' = y^2$ und $y' = \\sin(y)$ sind <em>nichtlinear</em> in $y$. $y' = 3y$ ist <em>linear</em> — das ist der Ausreisser.",
+    alt: "Alternative: Alle drei sind homogen. Und alle drei sind mit TdV lösbar — also wäre keine ein Ausreisser nach diesem Kriterium."
+  },
+  {
+    cards: ["$(y')^2 = y$", "$\\cos(y') = xy$", "$(y')^2 - y' + 1 = 0$"],
+    odd: 0,
+    reason: "Alle drei sind <em>nicht explizit</em> — $y'$ lässt sich nicht direkt isolieren. Aber $(y')^2 = y$ lässt sich noch nach $y'$ auflösen: $y' = \\pm\\sqrt{y}$. Die anderen zwei können nicht aufgelöst werden.",
+    alt: "Diskussion: Ist 'nicht explizit lösbar' und 'nicht explizit' dasselbe? Was heisst 'explizit' genau?"
+  },
+  {
+    cards: ["$y' = x^2$", "$y' = \\cos(x)$", "$y' = e^x + y$"],
+    odd: 2,
+    reason: "Bei $y' = x^2$ und $y' = \\cos(x)$ hängt die rechte Seite <em>nur von $x$</em> ab — das sind direkt integrierbare DGLs, keine echte Kopplung. $y' = e^x + y$ hat einen $y$-Term und ist damit anders.",
+    alt: "Alle drei sind linear und explizit. Alternativlesart: die ersten zwei sind trivial lösbar, die dritte braucht VdK."
+  },
+  {
+    cards: ["$y'' + y = 0$", "$y'' + 2y' + y = 0$", "$y' = -y$"],
+    odd: 2,
+    reason: "$y'' + y = 0$ und $y'' + 2y' + y = 0$ sind DGLs <em>zweiter Ordnung</em>. $y' = -y$ ist erste Ordnung — das ist der Ausreisser.",
+    alt: "Alle drei sind linear und homogen. Und alle drei haben $e^{-x}$ (oder Varianten davon) in der Lösung — interessante Verwandtschaft!"
+  },
+];
+
+/* ══════════════════════════════════════════════════
+   ZUSTAND
+══════════════════════════════════════════════════ */
+let current = 0;
+let droppedId = null;
+let dragging = null;
+
+function initApp() {
+  loadTripel(0);
+}
+
+function loadTripel(idx) {
+  const t = TRIPEL[idx];
+  droppedId = null;
+  dragging = null;
+
+  // Karten befüllen
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById('card-' + i);
+    el.innerHTML = t.cards[i];
+    el.dataset.idx = i;
+    el.className = 'dgl-card';
+    el.draggable = true;
+    el.style.display = '';
+    el.ondragstart = e => { dragging = i; el.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; };
+    el.ondragend = () => { el.classList.remove('dragging'); dragging = null; };
+  }
+
+  // Drop-Zone zurücksetzen
+  const drop = document.getElementById('odd-drop');
+  drop.className = 'odd-drop';
+  drop.innerHTML = '<span class="odd-icon">🚫</span><span>Hier ablegen</span>';
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = e => {
+    e.preventDefault();
+    drop.classList.remove('over');
+    if (dragging !== null) handleDrop(dragging);
+  };
+
+  // Begründung verstecken
+  const ra = document.getElementById('reason-area');
+  ra.style.visibility = 'hidden';
+
+  // Fortschritt
+  document.getElementById('tripel-label').textContent = `Tripel ${idx+1} von ${TRIPEL.length}`;
+  document.getElementById('counter').textContent = `${idx+1} / ${TRIPEL.length}`;
+  document.getElementById('progress-fill').style.width = `${(idx+1)/TRIPEL.length*100}%`;
+  document.getElementById('prev-btn').disabled = idx === 0;
+  document.getElementById('next-btn').textContent = idx === TRIPEL.length-1 ? 'Fertig ✓' : 'Weiter →';
+
+  // Abschluss-Screen verstecken
+  document.getElementById('done-screen').classList.remove('show');
+  document.getElementById('cards-row').style.display = '';
+  document.getElementById('progress-fill').closest('.progress').style.display = '';
+  document.getElementById('tripel-label').style.display = '';
+
+  MathJax.typesetPromise([document.getElementById('cards-row')]);
+}
+
+function handleDrop(cardIdx) {
+  const t = TRIPEL[current];
+  droppedId = cardIdx;
+
+  const drop = document.getElementById('odd-drop');
+  drop.className = 'odd-drop filled';
+  drop.innerHTML = '';
+
+  // Karte in Drop-Zone bewegen
+  const cardEl = document.getElementById('card-' + cardIdx);
+  const clone = cardEl.cloneNode(true);
+  clone.className = 'dgl-card highlight-odd';
+  clone.draggable = false;
+  drop.appendChild(clone);
+
+  // Original-Karte ausgrauen
+  cardEl.style.opacity = '.3';
+  cardEl.draggable = false;
+
+  // Andere Karten grüner Rahmen
+  for (let i = 0; i < 3; i++) {
+    if (i !== cardIdx) document.getElementById('card-'+i).classList.add('checked-ok');
+  }
+
+  // Begründung vorbereiten + anzeigen
+  const ra = document.getElementById('reason-area');
+  const rb = document.getElementById('reason-box');
+  const ab = document.getElementById('alternatives-box');
+  rb.innerHTML = t.reason;
+  rb.className = 'reason-reveal hidden';
+  ab.innerHTML = t.alt ? `💬 ${t.alt}` : '';
+  ra.style.visibility = 'visible';
+
+  MathJax.typesetPromise([drop, ra]);
+}
+
+function revealReason() {
+  document.getElementById('reason-box').classList.remove('hidden');
+}
+
+function nextTripel() {
+  if (current === TRIPEL.length - 1) {
+    showDone();
+  } else {
+    current++;
+    loadTripel(current);
+  }
+}
+
+function prevTripel() {
+  if (current > 0) {
+    current--;
+    loadTripel(current);
+  }
+}
+
+function showDone() {
+  document.getElementById('cards-row').style.display = 'none';
+  document.getElementById('reason-area').style.visibility = 'hidden';
+  document.querySelector('.progress').style.display = 'none';
+  document.getElementById('tripel-label').style.display = 'none';
+  document.getElementById('done-screen').classList.add('show');
+}
+
+function restart() {
+  current = 0;
+  loadTripel(0);
+}
+
+initApp();
+</script>
+</body>
+</html>
