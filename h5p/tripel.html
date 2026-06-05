@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Tripel – Richtungsfeld, DGL, Lösung</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+:root{
+  --bg:#F7F2E8;--paper:#FFFDF8;--ink:#2F261C;--muted:#6C5A49;
+  --gold:#B5892A;--gold-soft:#F0E0B0;--terracotta:#935100;
+  --line:#E0D5C0;--shadow:rgba(42,33,24,.14);
+  --rf:#3B6EA8;--dgl:#5A9E6F;--sol:#8B5E3C;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'Source Sans 3',sans-serif;color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+.header{flex:0 0 auto;padding:8px 16px;background:var(--paper);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.header h1{font-family:'Playfair Display',serif;font-size:15px;white-space:nowrap}
+.legend{display:flex;gap:8px}
+.leg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:2px}
+.header-note{font-size:10px;color:var(--muted);font-style:italic}
+.btns{margin-left:auto;display:flex;gap:6px;align-items:center}
+.check-btn{background:var(--terracotta);color:var(--paper);border:none;border-radius:7px;padding:4px 13px;font-size:11px;cursor:pointer;font-family:'Source Sans 3',sans-serif}
+.check-btn:hover{background:#7a4400}
+.reset-btn{background:none;border:1px solid var(--line);border-radius:7px;padding:4px 10px;font-size:11px;color:var(--muted);cursor:pointer;font-family:'Source Sans 3',sans-serif}
+.reset-btn:hover{background:var(--gold-soft)}
+.msg{font-size:10.5px;font-weight:600;white-space:nowrap}
+.msg.ok{color:#2D6A3F} .msg.err{color:var(--terracotta)}
+
+/* Layout: 3 Vorrat-Reihen oben, Tripel-Tische unten */
+.main{flex:1;display:flex;flex-direction:column;padding:8px 10px;gap:8px;min-height:0;overflow:hidden}
+
+.vorrat{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex-shrink:0}
+.vorrat-col{}
+.col-lbl{font-size:8.5px;letter-spacing:1.8px;text-transform:uppercase;font-weight:700;margin-bottom:5px}
+.strip{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Karten */
+.card{border-radius:8px;border:2px solid var(--line);background:white;box-shadow:0 2px 6px var(--shadow);cursor:grab;user-select:none;transition:box-shadow .15s,transform .15s,opacity .2s;flex-shrink:0}
+.card:hover:not(.used):not(.matched){box-shadow:0 4px 14px rgba(42,33,24,.2);transform:translateY(-2px)}
+.card.dragging{opacity:.35;cursor:grabbing;transform:none!important}
+.card.used{opacity:.22;border-style:dashed;cursor:default;transform:none!important;box-shadow:none!important}
+.card.matched{border-color:#5A9E6F;background:#F0FAF3;cursor:default}
+.card.wrong{border-color:var(--terracotta);background:#FFF5EC}
+
+.rf-card{width:82px;height:72px;padding:3px;border-color:var(--rf)}
+.rf-card canvas{width:100%;height:100%;display:block}
+/* Fixe RF-Karte: kein Hover, kein grab, leicht anderser Rand */
+.rf-fixed{cursor:default;border-color:var(--rf);border-width:2px;opacity:1!important}
+.rf-fixed:hover{transform:none!important;box-shadow:0 2px 6px var(--shadow)!important}
+.dgl-card{padding:8px 9px;font-size:12.5px;text-align:center;min-width:95px;border-color:var(--dgl)}
+.sol-card{padding:7px 8px;font-size:11px;text-align:center;min-width:95px;max-width:130px;line-height:1.35;border-color:var(--sol)}
+
+/* Tripel-Tische */
+.tische{flex:1;min-height:0;overflow-x:auto;overflow-y:hidden}
+.tische-row{display:flex;gap:8px;height:100%;align-items:flex-start;padding:2px 1px}
+.slot{display:flex;flex-direction:column;gap:5px;padding:7px 8px;background:rgba(255,253,248,.85);border:1.5px solid var(--line);border-radius:10px;box-shadow:0 2px 7px var(--shadow);flex-shrink:0}
+.slot-hdr{font-family:'Playfair Display',serif;font-size:11px;color:var(--muted);margin-bottom:1px;text-align:center}
+.drop-cell{min-height:56px;width:90px;border:1.5px dashed var(--line);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8.5px;color:rgba(108,90,73,.45);transition:background .12s,border-color .12s;position:relative;padding:2px}
+.drop-cell.rf-cell{border-color:color-mix(in srgb,var(--rf) 50%,transparent);min-height:70px;width:90px}
+.drop-cell.dgl-cell{border-color:color-mix(in srgb,var(--dgl) 50%,transparent)}
+.drop-cell.sol-cell{border-color:color-mix(in srgb,var(--sol) 50%,transparent)}
+.drop-cell.over{background:rgba(181,137,42,.1);border-color:var(--gold)!important;border-style:solid}
+.drop-cell .card{margin:0;width:100%;cursor:pointer}
+.drop-cell .rf-card{width:84px;height:64px}
+.drop-cell .card:hover{transform:none}
+.type-lbl{font-size:7.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;opacity:.45;margin-bottom:1px}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🔺 Tripel finden</h1>
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:var(--dgl)"></div>DGL ziehen</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--sol)"></div>Lösung ziehen</div>
+  </div>
+  <span class="header-note">Richtungsfelder sind fix — DGL und Lösung dem richtigen zuordnen.</span>
+  <div class="btns">
+    <button class="check-btn" onclick="checkAll()">✓ Auflösen</button>
+    <button class="reset-btn" onclick="resetAll()">↺ Reset</button>
+    <span class="msg" id="msg"></span>
+  </div>
+</div>
+<div class="main">
+  <div class="vorrat">
+    <div class="vorrat-col">
+      <div class="col-lbl" style="color:var(--dgl)">Differentialgleichungen</div>
+      <div class="strip" id="dgl-strip"></div>
+    </div>
+    <div class="vorrat-col">
+      <div class="col-lbl" style="color:var(--sol)">Lösungsterme</div>
+      <div class="strip" id="sol-strip"></div>
+    </div>
+  </div>
+  <div class="type-lbl" style="color:var(--muted)">Tripel zusammenstellen — Doppelklick auf platzierte Karte zum Zurücklegen</div>
+  <div class="tische">
+    <div class="tische-row" id="tische-row"></div>
+  </div>
+</div>
+
+<script>
+/* ── Richtungsfelder ── */
+function drawRF(canvas, f) {
+  const W=canvas.width, H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const xmin=-2.5,xmax=2.5,ymin=-2.5,ymax=2.5;
+  const tx=x=>(x-xmin)/(xmax-xmin)*W;
+  const ty=y=>H-(y-ymin)/(ymax-ymin)*H;
+  // Achsen
+  ctx.strokeStyle='#ddd';ctx.lineWidth=.6;
+  ctx.beginPath();ctx.moveTo(tx(xmin),ty(0));ctx.lineTo(tx(xmax),ty(0));
+  ctx.moveTo(tx(0),ty(ymin));ctx.lineTo(tx(0),ty(ymax));ctx.stroke();
+  // Linienelemente — dünn!
+  ctx.lineWidth=0.9;
+  const step=0.48, len=0.14;
+  for(let x=xmin+.2;x<xmax;x+=step){
+    for(let y=ymin+.2;y<ymax;y+=step){
+      let s=f(x,y);
+      if(!isFinite(s))continue;
+      s=Math.max(-7,Math.min(7,s));
+      const a=Math.atan(s);
+      const dx=len*Math.cos(a), dy=len*Math.sin(a);
+      const cx=tx(x),cy=ty(y);
+      const cdx=dx/(xmax-xmin)*W, cdy=dy/(ymax-ymin)*H;
+      ctx.strokeStyle='#3B6EA8';
+      ctx.beginPath();
+      ctx.moveTo(cx-cdx,cy+cdy);ctx.lineTo(cx+cdx,cy-cdy);
+      ctx.stroke();
+    }
+  }
+}
+
+/* ── Daten ── */
+const TRIPEL=[
+  {id:'t1',f:(x,y)=>x*x,       dgl:"y' = x²",         sol:"y = x³/3 + c"},
+  {id:'t2',f:(x,y)=>-x+y,      dgl:"y' = −x + y",     sol:"y = ceˣ + x + 1"},
+  {id:'t3',f:(x,y)=>-x*y,      dgl:"y' = −x·y",       sol:"y = c·e^(−x²/2)"},
+  {id:'t4',f:(x,y)=>y/(x||.001),dgl:"y' = y/x",       sol:"y = c·x"},
+  {id:'t5',f:(x,y)=>y*y,       dgl:"y' = y²",         sol:"y = −1/(x+c)"},
+  {id:'t6',f:(x,y)=>y,         dgl:"y' = y",          sol:"y = c·eˣ"},
+];
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+let dragging=null;
+let slots={};
+TRIPEL.forEach((_,i)=>slots[i]={rf:null,dgl:null,sol:null});
+
+function buildAll(){
+  const dglS=document.getElementById('dgl-strip');
+  const solS=document.getElementById('sol-strip');
+
+  // DGL und Sol gemischt in Vorrat
+  shuffle([...TRIPEL]).forEach(t=>{
+    const c=document.createElement('div');
+    c.className='card dgl-card';c.id='src-dgl-'+t.id;
+    c.dataset.type='dgl';c.dataset.tid=t.id;c.textContent=t.dgl;
+    drag(c,'dgl',t.id);dglS.appendChild(c);
+  });
+  shuffle([...TRIPEL]).forEach(t=>{
+    const c=document.createElement('div');
+    c.className='card sol-card';c.id='src-sol-'+t.id;
+    c.dataset.type='sol';c.dataset.tid=t.id;c.textContent=t.sol;
+    drag(c,'sol',t.id);solS.appendChild(c);
+  });
+
+  // Tripel-Tische — RF sofort gezeichnet, fix
+  const row=document.getElementById('tische-row');
+  TRIPEL.forEach((t,i)=>{
+    slots[i].rf = t.id; // RF vorbelegt
+
+    const slot=document.createElement('div');
+    slot.className='slot';
+
+    // RF-Canvas fix
+    const rfDiv=document.createElement('div');
+    rfDiv.className='card rf-card rf-fixed';
+    rfDiv.title=`Richtungsfeld ${i+1}`;
+    const cv=document.createElement('canvas');cv.width=84;cv.height=70;
+    rfDiv.appendChild(cv);
+    setTimeout(()=>drawRF(cv,t.f),30+i*10);
+
+    const hdr=document.createElement('div');
+    hdr.className='slot-hdr';hdr.textContent=`Tripel ${i+1}`;
+
+    const dglLbl=document.createElement('div');
+    dglLbl.className='type-lbl';dglLbl.style.color='var(--dgl)';dglLbl.textContent='DGL';
+    const dglCell=document.createElement('div');
+    dglCell.className='drop-cell dgl-cell';
+    dglCell.dataset.slot=i;dglCell.dataset.type='dgl';dglCell.textContent='DGL';
+
+    const solLbl=document.createElement('div');
+    solLbl.className='type-lbl';solLbl.style.color='var(--sol)';solLbl.textContent='Lösung';
+    const solCell=document.createElement('div');
+    solCell.className='drop-cell sol-cell';
+    solCell.dataset.slot=i;solCell.dataset.type='sol';solCell.textContent='Sol';
+
+    slot.appendChild(hdr);
+    slot.appendChild(rfDiv);
+    slot.appendChild(dglLbl);
+    slot.appendChild(dglCell);
+    slot.appendChild(solLbl);
+    slot.appendChild(solCell);
+    row.appendChild(slot);
+  });
+
+  document.querySelectorAll('.drop-cell').forEach(cell=>{
+    cell.addEventListener('dragover',e=>{
+      if(dragging&&dragging.type===cell.dataset.type){e.preventDefault();cell.classList.add('over');}
+    });
+    cell.addEventListener('dragleave',()=>cell.classList.remove('over'));
+    cell.addEventListener('drop',e=>{
+      e.preventDefault();cell.classList.remove('over');
+      if(dragging&&dragging.type===cell.dataset.type)
+        placeCard(parseInt(cell.dataset.slot),dragging.type,dragging.id);
+    });
+  });
+
+  [dglS,solS].forEach(s=>{
+    s.addEventListener('dragover',e=>e.preventDefault());
+    s.addEventListener('drop',e=>{e.preventDefault();if(dragging)returnCard(dragging.type,dragging.id);});
+  });
+}
+
+function drag(el,type,id){
+  el.draggable=true;
+  el.ondragstart=e=>{dragging={type,id};el.classList.add('dragging');e.dataTransfer.effectAllowed='move';};
+  el.ondragend=()=>{el.classList.remove('dragging');dragging=null;};
+}
+
+function placeCard(slotIdx,type,cardId){
+  if(slots[slotIdx][type])returnCard(type,slots[slotIdx][type]);
+  slots[slotIdx][type]=cardId;
+  const src=document.getElementById(`src-${type}-${cardId}`);
+  if(src){src.classList.add('used');src.draggable=false;}
+  const cell=document.querySelector(`.drop-cell[data-slot="${slotIdx}"][data-type="${type}"]`);
+  if(!cell)return;
+  cell.innerHTML='';
+  const t=TRIPEL.find(x=>x.id===cardId);
+  let el;
+  if(type==='rf'){
+    el=document.createElement('div');el.className='card rf-card';
+    const cv=document.createElement('canvas');cv.width=84;cv.height=64;
+    el.appendChild(cv);setTimeout(()=>drawRF(cv,t.f),20);
+  } else {
+    el=document.createElement('div');
+    el.className=`card ${type}-card`;
+    el.style.fontSize='10.5px';el.style.padding='5px 6px';el.style.width='100%';
+    el.textContent=type==='dgl'?t.dgl:t.sol;
+  }
+  el.ondblclick=()=>{returnCard(type,cardId);slots[slotIdx][type]=null;resetCell(cell,type);};
+  cell.appendChild(el);
+  document.getElementById('msg').textContent='';
+}
+
+function returnCard(type,cardId){
+  const src=document.getElementById(`src-${type}-${cardId}`);
+  if(src){src.classList.remove('used','matched','wrong');src.draggable=true;}
+  Object.keys(slots).forEach(i=>{
+    if(slots[i][type]===cardId){slots[i][type]=null;
+      const cell=document.querySelector(`.drop-cell[data-slot="${i}"][data-type="${type}"]`);
+      if(cell)resetCell(cell,type);}
+  });
+}
+
+function resetCell(cell,type){
+  const lbl={rf:'RF',dgl:'DGL',sol:'Sol'};
+  cell.innerHTML=lbl[type];cell.classList.remove('over');
+}
+
+function checkAll(){
+  let ok=0,total=0;
+  TRIPEL.forEach((t,i)=>{
+    ['dgl','sol'].forEach(type=>{   // rf ist fix, muss nicht geprüft werden
+      total++;
+      const cell=document.querySelector(`.drop-cell[data-slot="${i}"][data-type="${type}"]`);
+      const card=cell&&cell.querySelector('.card');
+      if(slots[i][type]===t.id){ok++;if(card)card.classList.add('matched');}
+      else if(card)card.classList.add('wrong');
+    });
+  });
+  const msg=document.getElementById('msg');
+  msg.textContent=ok===total?`✓ Alle ${TRIPEL.length} Tripel korrekt!`:`${ok}/${total} stimmen`;
+  msg.className='msg '+(ok===total?'ok':'err');
+}
+
+function resetAll(){
+  TRIPEL.forEach((_,i)=>{ slots[i].dgl=null; slots[i].sol=null; }); // rf bleibt
+  document.querySelectorAll('.card.used,.card.matched,.card.wrong').forEach(c=>{
+    c.classList.remove('used','matched','wrong');c.draggable=true;
+  });
+  document.querySelectorAll('.drop-cell').forEach(cell=>resetCell(cell,cell.dataset.type));
+  document.getElementById('msg').textContent='';
+}
+
+buildAll();
+</script>
+</body>
+</html>

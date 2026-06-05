@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Suchkarten – Station 3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;600;700&family=Caveat:wght@500;600&display=swap');
+:root{
+  --bg:#F7F2E8;--paper:#FFFDF8;--ink:#2F261C;--muted:#6C5A49;
+  --gold:#B5892A;--gold-soft:#F0E0B0;--terracotta:#935100;
+  --line:#E0D5C0;--shadow:rgba(42,33,24,.14);
+  --amber:#F0A830;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'Source Sans 3',sans-serif;color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+.header{flex:0 0 auto;padding:9px 18px;background:var(--paper);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.header h1{font-family:'Playfair Display',serif;font-size:16px;white-space:nowrap}
+.sc-nav{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.sc-tab{border:1.5px solid var(--line);background:var(--paper);border-radius:20px;padding:4px 11px;font-size:10.5px;font-family:'Source Sans 3',sans-serif;cursor:pointer;color:var(--muted);transition:.15s}
+.sc-tab:hover{background:var(--gold-soft);color:var(--ink)}
+.sc-tab.active{background:var(--terracotta);color:var(--paper);border-color:var(--terracotta)}
+.reset-btn{background:none;border:1px solid var(--line);border-radius:8px;padding:4px 11px;font-size:11px;color:var(--muted);cursor:pointer;font-family:'Source Sans 3',sans-serif;white-space:nowrap}
+.reset-btn:hover{background:var(--gold-soft)}
+
+.layout{flex:1;display:grid;grid-template-columns:1fr 270px;min-height:0}
+
+/* Stapel links */
+.stapel{padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--line)}
+.stapel-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:2px}
+.dgl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:7px}
+
+/* DGL-Karten */
+.dgl-card{background:white;border:2px solid var(--line);border-radius:9px;padding:10px 8px;text-align:center;font-size:13px;box-shadow:0 2px 7px var(--shadow);cursor:grab;user-select:none;transition:box-shadow .15s,transform .15s,opacity .2s;min-height:48px;display:flex;align-items:center;justify-content:center}
+.dgl-card:hover{box-shadow:0 5px 16px rgba(42,33,24,.2);transform:translateY(-2px)}
+.dgl-card.dragging{opacity:.35;cursor:grabbing;transform:none!important}
+.dgl-card.used{opacity:.25;border-style:dashed;cursor:default;transform:none!important;box-shadow:none!important}
+
+/* Panel rechts */
+.panel{padding:12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+
+/* Suchkarte */
+.suchkarte{background:var(--amber);border:2px solid #C88820;border-radius:12px;padding:12px 14px;box-shadow:0 4px 14px rgba(181,137,42,.25)}
+.suchkarte-vor{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:rgba(42,33,24,.55);margin-bottom:5px}
+.suchkarte p{font-family:'Caveat',cursive;font-size:17px;line-height:1.3;color:var(--ink)}
+
+/* Drop-Zone */
+.drop-zone{flex:1;min-height:100px;border:2px dashed var(--line);border-radius:10px;background:rgba(255,253,248,.7);padding:8px;display:flex;flex-direction:column;gap:5px;transition:background .15s,border-color .15s}
+.drop-zone.over{background:rgba(181,137,42,.1);border-color:var(--gold)}
+.drop-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.empty-hint{font-size:10.5px;color:var(--muted);padding:4px 0}
+.dropped-item{background:white;border:1.5px solid var(--terracotta);border-radius:7px;padding:5px 8px;font-size:11.5px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px var(--shadow)}
+.rm-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;line-height:1;padding:0 2px}
+.rm-btn:hover{color:var(--terracotta)}
+
+/* Lösung */
+.reveal-btn{background:var(--paper);border:1.5px solid var(--gold);border-radius:9px;padding:7px 12px;font-size:11px;color:var(--ink);cursor:pointer;font-family:'Source Sans 3',sans-serif;text-align:center;transition:.15s}
+.reveal-btn:hover{background:var(--gold-soft)}
+.sol-box{background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:11px;color:var(--muted);line-height:1.55;display:none}
+.sol-box.show{display:block}
+.sol-box strong{color:var(--ink);display:block;margin-bottom:5px}
+.sol-tag{display:inline-block;background:#DDEAD8;border-radius:4px;padding:1px 7px;font-size:10px;color:#2D6A3F;margin:2px 2px 2px 0}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>✅ Suchkarten</h1>
+  <div class="sc-nav" id="sc-nav"></div>
+  <button class="reset-btn" onclick="resetCurrent()">↺ Zurücksetzen</button>
+</div>
+
+<div class="layout">
+  <div class="stapel">
+    <div class="stapel-lbl">DGL-Stapel – Station 3</div>
+    <div class="dgl-grid" id="dgl-grid"></div>
+  </div>
+  <div class="panel">
+    <div class="suchkarte" id="suchkarte">
+      <div class="suchkarte-vor">Suchkarte</div>
+      <p>Wählt oben eine Suchkarte.</p>
+    </div>
+    <div class="drop-zone" id="drop-zone">
+      <div class="drop-lbl">Eure Auswahl</div>
+      <div id="dropped-list"><div class="empty-hint">DGLs hierher ziehen…</div></div>
+    </div>
+    <button class="reveal-btn" onclick="toggleSol()">Lösung anzeigen / verbergen</button>
+    <div class="sol-box" id="sol-box"></div>
+  </div>
+</div>
+
+<script>
+/* ── Daten ─────────────────────────────────── */
+const DGLS = [
+  {id:'D01', tex:"y' + 2y = 5",              tags:['ansatz_easy','lin_inhom']},
+  {id:'D02', tex:"y' − y = e²ˣ",             tags:['ansatz_easy','lin_inhom']},
+  {id:'D03', tex:"y' + y = 3x",              tags:['ansatz_easy','lin_inhom']},
+  {id:'D04', tex:"y' + y = x² + 1",          tags:['ansatz_hard','lin_inhom']},
+  {id:'D05', tex:"y'' + y = x²",             tags:['ansatz_hard','lin_inhom','ord2']},
+  {id:'D06', tex:"y'' + 3y' + 2y = e⁻ˣ",    tags:['ansatz_hard','lin_inhom','ord2','resonanz']},
+  {id:'D07', tex:"y' + xy = x",              tags:['ansatz_fail','lin_inhom','varkoeff']},
+  {id:'D08', tex:"y' + xy = eˣ",             tags:['ansatz_fail','lin_inhom','varkoeff']},
+  {id:'D09', tex:"y'' + xy' = sin(x)",       tags:['ansatz_fail','lin_inhom','ord2','varkoeff']},
+  {id:'D10', tex:"y' = −2y",                 tags:['tdv','lin_hom','not_s3']},
+  {id:'D11', tex:"y' = y² + 1",              tags:['not_s3','nichtlin']},
+  {id:'D12', tex:"y'' + y'·y = 0",           tags:['not_s3','nichtlin','ord2']},
+  {id:'D13', tex:"y' + xy = 1",              tags:['ansatz_fail','lin_inhom','varkoeff']},
+  {id:'D14', tex:"y' − 3y = 0",              tags:['tdv','lin_hom','not_s3']},
+  {id:'D15', tex:"y'' − 4y' + 4y = e²ˣ",    tags:['ansatz_hard','lin_inhom','ord2','resonanz']},
+];
+
+const SUCHKARTEN = [
+  {
+    id:'s1', label:'S1 · Nicht lösbar',
+    text:'Findet alle DGLs, die ihr mit den Methoden aus Station 3 <em>gar nicht</em> lösen könnt. Begründet warum.',
+    correct:['D10','D11','D12','D14'],
+    sol:null, explanation:'<em>y\' = −2y</em> und <em>y\' − 3y = 0</em> sind <em>homogen</em> — Station 3 behandelt nur inhomogene DGLs. <em>y\' = y² + 1</em> und <em>y\'\' + y\'·y = 0</em> sind <em>nichtlinear</em>.'
+  },
+  {
+    id:'s2', label:'S2 · Ansatz einfach',
+    text:'Findet alle DGLs, bei denen der partikuläre Lösungsansatz <em>besonders einfach</em> ist.',
+    correct:['D01','D02','D03'],
+    sol:null, explanation:'Konstante, Exponential- oder einfache Polynomstörung → eine oder zwei Unbekannte, schnell gelöst.'
+  },
+  {
+    id:'s3', label:'S3 · Ansatz mühsam',
+    text:'Findet alle DGLs, bei denen der partikuläre Ansatz <em>funktioniert, aber aufwendig</em> ist.',
+    correct:['D04','D05','D06','D15'],
+    sol:null, explanation:'<em>y\'\' + 3y\' + 2y = e⁻ˣ</em> und <em>y\'\' − 4y\' + 4y = e²ˣ</em> sind <em>Resonanzfälle</em> — der naive Ansatz scheitert, der Grad muss erhöht werden.'
+  },
+  {
+    id:'s4', label:'S4 · Ansatz scheitert',
+    text:'Findet alle DGLs, bei denen der partikuläre Lösungsansatz <em>scheitert</em>. Was dann?',
+    correct:['D07','D08','D09','D13'],
+    sol:null, explanation:'Alle haben variablen Koeffizienten vor y → Variation der Konstanten nötig.'
+  },
+  {
+    id:'s5', label:'S5 · Auch mit TdV',
+    text:'Findet alle DGLs, die ihr <em>auch schon mit Trennung der Variablen</em> (Station 2) hätten lösen können.',
+    correct:['D10','D14'],
+    sol:null, explanation:'<em>y\' = −2y</em> und <em>y\' − 3y = 0</em> sind homogen und separierbar. Überraschung: Variation der Konstanten <em>scheitert nie</em> bei lin. inhom. DGLs 1. Ordnung!'
+  },
+];
+
+/* ── Zustand ─────────────────────────────── */
+let currentSC = null;
+let selections = {}; // sc-id → Set<dgl-id>
+SUCHKARTEN.forEach(sc => selections[sc.id] = new Set());
+let dragging = null;
+
+/* ── Aufbau ──────────────────────────────── */
+function buildAll() {
+  // Tabs
+  const nav = document.getElementById('sc-nav');
+  SUCHKARTEN.forEach(sc => {
+    const btn = document.createElement('button');
+    btn.className = 'sc-tab';
+    btn.id = 'tab-' + sc.id;
+    btn.innerHTML = sc.label;
+    btn.onclick = () => selectSC(sc.id);
+    nav.appendChild(btn);
+  });
+
+  // DGL-Grid
+  const grid = document.getElementById('dgl-grid');
+  DGLS.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'dgl-card';
+    el.id = 'dgl-' + d.id;
+    el.dataset.id = d.id;
+    el.textContent = d.tex;
+    el.draggable = true;
+    el.ondragstart = e => { dragging = d.id; el.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; };
+    el.ondragend = () => { el.classList.remove('dragging'); dragging = null; };
+    grid.appendChild(el);
+  });
+
+  // Drop-Zone
+  const dz = document.getElementById('drop-zone');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); dz.classList.remove('over');
+    if (dragging && currentSC) {
+      selections[currentSC].add(dragging);
+      renderDropped();
+      updateGrid();
+    }
+  });
+
+  // Erste Suchkarte aktivieren
+  selectSC('s1');
+}
+
+function selectSC(id) {
+  currentSC = id;
+  document.querySelectorAll('.sc-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  const sc = SUCHKARTEN.find(s => s.id === id);
+  document.getElementById('suchkarte').innerHTML =
+    '<div class="suchkarte-vor">Suchkarte</div><p>' + sc.text + '</p>';
+  document.getElementById('sol-box').classList.remove('show');
+  renderDropped();
+  updateGrid();
+}
+
+function renderDropped() {
+  const list = document.getElementById('dropped-list');
+  const set = selections[currentSC];
+  if (set.size === 0) {
+    list.innerHTML = '<div class="empty-hint">DGLs hierher ziehen…</div>';
+    return;
+  }
+  list.innerHTML = '';
+  set.forEach(did => {
+    const d = DGLS.find(x => x.id === did);
+    if (!d) return;
+    const el = document.createElement('div');
+    el.className = 'dropped-item';
+    el.innerHTML = `<span>${d.tex}</span><button class="rm-btn" data-rm="${did}">×</button>`;
+    el.querySelector('.rm-btn').onclick = () => { selections[currentSC].delete(did); renderDropped(); updateGrid(); };
+    list.appendChild(el);
+  });
+}
+
+function updateGrid() {
+  const set = selections[currentSC] || new Set();
+  DGLS.forEach(d => {
+    const el = document.getElementById('dgl-' + d.id);
+    if (!el) return;
+    el.classList.toggle('used', set.has(d.id));
+    el.draggable = !set.has(d.id);
+  });
+}
+
+function resetCurrent() {
+  if (!currentSC) return;
+  selections[currentSC] = new Set();
+  renderDropped();
+  updateGrid();
+  document.getElementById('sol-box').classList.remove('show');
+}
+
+function toggleSol() {
+  const box = document.getElementById('sol-box');
+  if (box.classList.contains('show')) { box.classList.remove('show'); return; }
+  const sc = SUCHKARTEN.find(s => s.id === currentSC);
+  if (!sc) return;
+  // DGL-Tags dynamisch aus correct-IDs + DGLS.tex bauen
+  const tags = sc.correct.map(id => {
+    const d = DGLS.find(x => x.id === id);
+    return d ? `<span class="sol-tag">${d.tex}</span>` : '';
+  }).join('');
+  box.innerHTML = '<strong>Antwort:</strong> ' + tags + '<br>' + sc.explanation;
+  box.classList.add('show');
+}
+
+buildAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Venn-Diagramm – DGL-Eigenschaften</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+:root{
+  --bg:#F7F2E8;--paper:#FFFDF8;--ink:#2F261C;--muted:#6C5A49;
+  --gold:#B5892A;--gold-soft:#F0E0B0;--terracotta:#935100;
+  --line:#E0D5C0;--shadow:rgba(42,33,24,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'Source Sans 3',sans-serif;color:var(--ink);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.header{flex:0 0 auto;padding:9px 18px;background:var(--paper);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.header h1{font-family:'Playfair Display',serif;font-size:16px}
+.header p{font-size:11px;color:var(--muted);flex:1}
+.reset-btn{background:none;border:1px solid var(--line);border-radius:8px;padding:4px 12px;font-size:11px;color:var(--muted);cursor:pointer;font-family:'Source Sans 3',sans-serif}
+.reset-btn:hover{background:var(--gold-soft)}
+.layout{flex:1;display:grid;grid-template-columns:170px 1fr;min-height:0}
+.tray{padding:10px 8px;border-right:1px solid var(--line);background:var(--paper);overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.tray-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:2px}
+.dgl-card{background:white;border:1.5px solid var(--line);border-radius:8px;padding:7px 9px;font-size:13px;cursor:grab;user-select:none;box-shadow:0 2px 6px var(--shadow);text-align:center;transition:box-shadow .15s,transform .15s,opacity .2s;line-height:1.3}
+.dgl-card:hover:not(.used){box-shadow:0 4px 14px rgba(42,33,24,.22);transform:translateY(-1px)}
+.dgl-card.dragging{opacity:.35;cursor:grabbing;transform:none!important}
+.dgl-card.used{opacity:.28;border-style:dashed;cursor:default;transform:none!important;box-shadow:none!important}
+.zone-card{font-size:10px;padding:2px 5px;cursor:grab;margin:1px;background:white;border:1.5px solid var(--line);border-radius:6px;box-shadow:0 1px 4px var(--shadow);text-align:center;line-height:1.3;user-select:none}
+.zone-card:hover{transform:translateY(-1px);box-shadow:0 3px 8px var(--shadow)}
+.venn-wrap{position:relative;overflow:hidden}
+#venn-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+
+/* Drop-Zonen über dem SVG */
+.vzone{
+  position:absolute;z-index:10;
+  display:flex;flex-wrap:wrap;gap:2px;padding:3px;
+  align-content:center;justify-content:center;
+  border-radius:6px;border:1.5px dashed transparent;
+  transition:background .12s,border-color .12s;
+  /* Kleine sichtbare Markierung damit klar ist wo man ablegen kann */
+  background:rgba(255,255,255,.15);
+}
+.vzone::before{
+  content:attr(data-hint);
+  position:absolute;font-size:7.5px;color:rgba(47,38,28,.35);
+  letter-spacing:.5px;text-transform:uppercase;
+  white-space:nowrap;pointer-events:none;
+  bottom:2px;left:50%;transform:translateX(-50%);
+}
+.vzone.has-cards::before{display:none}
+.vzone.over{background:rgba(181,137,42,.15);border-color:var(--gold)}
+.outside-box{position:absolute;right:8px;top:8px;width:115px;min-height:60px;background:rgba(255,253,248,.92);border:1.5px dashed var(--line);border-radius:10px;padding:6px;z-index:10}
+.outside-box.over{border-color:var(--gold);background:rgba(181,137,42,.08)}
+.outside-lbl{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:3px}
+.fb{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:5px 14px;font-size:11px;color:var(--muted);box-shadow:0 2px 10px var(--shadow);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .3s;z-index:20}
+.fb.show{opacity:1}
+.fb.ok{color:#2D6A3F;border-color:#5A9E6F;background:#F0FAF3}
+.fb.warn{color:var(--terracotta);border-color:var(--terracotta);background:#FFF5EC}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>⭕ Venn-Diagramm</h1>
+  <p>Kärtchen in die richtigen Bereiche ziehen — auch Schnittmengen. Doppelklick zum Zurücklegen.</p>
+  <button class="reset-btn" onclick="resetAll()">↺ Zurücksetzen</button>
+</div>
+<div class="layout">
+  <div class="tray" id="tray"><div class="tray-lbl">DGL-Kärtchen</div></div>
+  <div class="venn-wrap" id="venn-wrap">
+
+    <!-- SVG: ViewBox 580×430, Kreise und Labels -->
+    <svg id="venn-svg" viewBox="0 0 580 430" preserveAspectRatio="xMidYMid meet">
+      <!-- Kreise -->
+      <circle cx="290" cy="148" r="138" fill="#3B6EA8" fill-opacity=".07" stroke="#3B6EA8" stroke-width="2"/>
+      <circle cx="200" cy="288" r="138" fill="#5A9E6F" fill-opacity=".07" stroke="#5A9E6F" stroke-width="2"/>
+      <circle cx="380" cy="288" r="138" fill="#8B5E3C" fill-opacity=".07" stroke="#8B5E3C" stroke-width="2"/>
+      <!-- Labels außerhalb der Kreise -->
+      <text x="290" y="22"  text-anchor="middle" fill="#3B6EA8" font-family="Playfair Display,serif" font-size="14" font-weight="700">linear</text>
+      <text x="62"  y="390" text-anchor="middle" fill="#5A9E6F" font-family="Playfair Display,serif" font-size="14" font-weight="700">homogen</text>
+      <text x="518" y="390" text-anchor="middle" fill="#8B5E3C" font-family="Playfair Display,serif" font-size="14" font-weight="700">explizit</text>
+      <!-- Kleine Zonen-Marker (Punkte zeigen wo man ablegen soll) -->
+      <circle cx="290" cy="88"  r="3" fill="#3B6EA8" fill-opacity=".4"/>
+      <circle cx="183" cy="330" r="3" fill="#5A9E6F" fill-opacity=".4"/>
+      <circle cx="397" cy="330" r="3" fill="#8B5E3C" fill-opacity=".4"/>
+      <circle cx="225" cy="205" r="3" fill="#7B80A0" fill-opacity=".4"/>
+      <circle cx="355" cy="205" r="3" fill="#7B80A0" fill-opacity=".4"/>
+      <circle cx="290" cy="338" r="3" fill="#7B80A0" fill-opacity=".4"/>
+      <circle cx="290" cy="242" r="3" fill="#7B80A0" fill-opacity=".4"/>
+    </svg>
+
+    <!--
+      Zonen-Positionen aus Python-Berechnung (SVG 580×430):
+      Jede Zone ist zentriert um das geometrische Zentrum ihres Bereichs.
+      Breite/Höhe: kompakt, passt in den jeweiligen Bereich.
+
+      nur_lin:   Zentrum SVG(290, 88)  → CSS left:50% top:20%   — oberer Teil lin-Kreis
+      nur_hom:   Zentrum SVG(183, 330) → CSS left:31% top:77%   — linker Teil hom-Kreis
+      nur_expl:  Zentrum SVG(397, 330) → CSS left:68% top:77%   — rechter Teil expl-Kreis
+      lin∩hom:   Zentrum SVG(225, 210) → CSS left:39% top:49%   — Schnitt lin+hom ohne expl
+      lin∩expl:  Zentrum SVG(355, 210) → CSS left:61% top:49%   — Schnitt lin+expl ohne hom
+      hom∩expl:  Zentrum SVG(290, 338) → CSS left:50% top:79%   — Schnitt hom+expl ohne lin
+      alle drei: Zentrum SVG(290, 242) → CSS left:50% top:56%   — Mitte aller drei
+    -->
+
+    <!-- nur linear: oben im lin-Kreis, über den Schnitten -->
+    <div class="vzone" id="z-lin"
+         data-hint="nur linear"
+         style="left:40%;top:16%;width:20%;min-height:44px;transform:translateX(-50%);left:50%">
+    </div>
+
+    <!-- nur homogen: unten links im hom-Kreis -->
+    <div class="vzone" id="z-hom"
+         data-hint="nur homogen"
+         style="left:18%;top:72%;width:20%;min-height:44px">
+    </div>
+
+    <!-- nur explizit: unten rechts im expl-Kreis -->
+    <div class="vzone" id="z-expl"
+         data-hint="nur explizit"
+         style="left:62%;top:72%;width:20%;min-height:44px">
+    </div>
+
+    <!-- lin ∩ hom (ohne expl): links in der Mitte -->
+    <div class="vzone" id="z-lin-hom"
+         data-hint="lin ∩ hom"
+         style="left:25%;top:44%;width:18%;min-height:44px">
+    </div>
+
+    <!-- lin ∩ expl (ohne hom): rechts in der Mitte -->
+    <div class="vzone" id="z-lin-expl"
+         data-hint="lin ∩ expl"
+         style="left:57%;top:44%;width:18%;min-height:44px">
+    </div>
+
+    <!-- hom ∩ expl (ohne lin): unten mitte -->
+    <div class="vzone" id="z-hom-expl"
+         data-hint="hom ∩ expl"
+         style="left:38%;top:74%;width:24%;min-height:44px">
+    </div>
+
+    <!-- alle drei: Zentrum -->
+    <div class="vzone" id="z-all"
+         data-hint="alle drei"
+         style="left:38%;top:50%;width:24%;min-height:44px">
+    </div>
+
+    <!-- Keiner der drei: Außen-Box oben rechts -->
+    <div class="outside-box" id="outside-box">
+      <div class="outside-lbl">Keiner der drei</div>
+      <div id="z-outside" style="display:flex;flex-wrap:wrap;gap:2px"></div>
+    </div>
+
+    <div class="fb" id="fb"></div>
+  </div>
+</div>
+<script>
+const CARDS = [
+  {id:'V01', tex:"y' = 3y",          correct:'z-all',      hint:"linear + homogen + explizit → Mitte"},
+  {id:'V02', tex:"y' = y/x",         correct:'z-all',      hint:"linear + homogen + explizit → Mitte"},
+  {id:'V03', tex:"y' = y(x+1)",      correct:'z-lin-expl', hint:"linear & explizit — homogen? Diskutieren!", discuss:true},
+  {id:'V04', tex:"y' = cos(x)",      correct:'z-lin-expl', hint:"Kein y-Term → linear & explizit, nicht homogen"},
+  {id:'V05', tex:"y' = x(y+1)",      correct:'z-lin-expl', hint:"xy+x → linear, inhomogen, explizit", discuss:true},
+  {id:'V06', tex:"y' = y²",          correct:'z-hom-expl', hint:"y² → nichtlinear; kein x → homogen & explizit"},
+  {id:'V07', tex:"y' = cos(y)",      correct:'z-hom-expl', hint:"cos(y) → nichtlinear; kein x-Term → homogen"},
+  {id:'V08', tex:"y' = y² + x",      correct:'z-expl',     hint:"nichtlinear, inhomogen, aber explizit"},
+  {id:'V09', tex:"cos(y') = xy/5",   correct:'z-hom',      hint:"y' im cos → nicht explizit; homogen"},
+  {id:'V10', tex:"(y')²−y'+3x=0",   correct:'z-outside',  hint:"Nicht explizit, nicht linear, nicht homogen"},
+  {id:'V11', tex:"y''+y'+y=3",       correct:'z-lin-expl', hint:"2. Ordnung! Linear & explizit — wo im Venn?", discuss:true},
+];
+
+let dragging = null;
+let placement = {};
+CARDS.forEach(c => placement[c.id] = 'tray');
+
+function buildTray() {
+  const tray = document.getElementById('tray');
+  CARDS.forEach(c => tray.appendChild(makeTrayCard(c)));
+}
+
+function makeTrayCard(c) {
+  const el = document.createElement('div');
+  el.className = 'dgl-card';
+  el.id = 'tray-' + c.id;
+  el.dataset.cid = c.id;
+  el.textContent = c.tex;
+  el.draggable = true;
+  el.ondragstart = e => {
+    dragging = c.id;
+    el.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  el.ondragend = () => { el.classList.remove('dragging'); dragging = null; };
+  return el;
+}
+
+function makeZoneCard(c) {
+  const el = document.createElement('div');
+  el.className = 'zone-card';
+  el.id = 'zone-' + c.id;
+  el.dataset.cid = c.id;
+  el.textContent = c.tex;
+  el.draggable = true;
+  el.ondragstart = e => {
+    dragging = c.id;
+    el.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  el.ondragend = () => { el.classList.remove('dragging'); dragging = null; };
+  el.ondblclick = () => returnToTray(c.id);
+  return el;
+}
+
+function setupDrops() {
+  document.querySelectorAll('.vzone').forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); zone.classList.add('over'); });
+    zone.addEventListener('dragleave', e => { if (!zone.contains(e.relatedTarget)) zone.classList.remove('over'); });
+    zone.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); zone.classList.remove('over'); if (dragging) placeCard(dragging, zone.id); });
+  });
+  const ob = document.getElementById('outside-box');
+  ob.addEventListener('dragover', e => { e.preventDefault(); ob.classList.add('over'); });
+  ob.addEventListener('dragleave', e => { if (!ob.contains(e.relatedTarget)) ob.classList.remove('over'); });
+  ob.addEventListener('drop', e => { e.preventDefault(); ob.classList.remove('over'); if (dragging) placeCard(dragging, 'z-outside'); });
+  const tray = document.getElementById('tray');
+  tray.addEventListener('dragover', e => e.preventDefault());
+  tray.addEventListener('drop', e => { e.preventDefault(); if (dragging) returnToTray(dragging); });
+}
+
+function placeCard(cid, zoneId) {
+  const existingZone = document.getElementById('zone-' + cid);
+  if (existingZone) existingZone.remove();
+  const container = zoneId === 'z-outside' ? document.getElementById('z-outside') : document.getElementById(zoneId);
+  if (!container) return;
+  const trayCard = document.getElementById('tray-' + cid);
+  if (trayCard) trayCard.classList.add('used');
+  const c = CARDS.find(x => x.id === cid);
+  container.appendChild(makeZoneCard(c));
+  // has-cards class für ::before ausblenden
+  const zone = document.getElementById(zoneId);
+  if (zone) zone.classList.add('has-cards');
+  placement[cid] = zoneId;
+  showFeedback(c);
+}
+
+function returnToTray(cid) {
+  const zoneCard = document.getElementById('zone-' + cid);
+  if (zoneCard) {
+    // Zone has-cards prüfen
+    const parent = zoneCard.parentElement;
+    zoneCard.remove();
+    if (parent && parent.classList.contains('vzone') && parent.children.length === 0) {
+      parent.classList.remove('has-cards');
+    }
+  }
+  const trayCard = document.getElementById('tray-' + cid);
+  if (trayCard) trayCard.classList.remove('used');
+  placement[cid] = 'tray';
+  hideFeedback();
+}
+
+function showFeedback(card) {
+  const fb = document.getElementById('fb');
+  fb.textContent = card.discuss ? '⚑ Diskussionswürdig — ' + card.hint : card.hint;
+  fb.className = 'fb show ' + (card.discuss ? 'warn' : 'ok');
+  clearTimeout(fb._t);
+  fb._t = setTimeout(() => fb.classList.remove('show'), 5000);
+}
+function hideFeedback() { document.getElementById('fb').classList.remove('show'); }
+
+function resetAll() {
+  document.querySelectorAll('[id^="zone-"]').forEach(el => el.remove());
+  document.querySelectorAll('.vzone').forEach(z => z.classList.remove('has-cards'));
+  CARDS.forEach(c => {
+    placement[c.id] = 'tray';
+    const tc = document.getElementById('tray-' + c.id);
+    if (tc) tc.classList.remove('used');
+  });
+  hideFeedback();
+}
+
+buildTray();
+setupDrops();
+
+// Zonen-Positionen nach Resize neu berechnen ist nicht nötig,
+// weil sie als % vom Container definiert sind — das skaliert automatisch.
+</script>
+</body>
+</html>
