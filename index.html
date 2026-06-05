@@ -2207,6 +2207,42 @@ body{
  border-top:1px solid var(--line);
 }
 
+
+/* NUR Popup-Darstellung: H5P kleiner rendern, Mindmap-Galerie kompakter */
+#materialModal{
+ width:min(1120px,96vw) !important;
+ height:min(680px,88vh) !important;
+ overflow:hidden !important;
+}
+#materialFrame{
+ width:130% !important;
+ height:130% !important;
+ transform:scale(.77) !important;
+ transform-origin:top left !important;
+ border:0 !important;
+ background:white !important;
+}
+.mindmapIntro{
+ font-size:12.8px !important;
+ line-height:1.35 !important;
+ margin-bottom:0 !important;
+}
+.mindmapScroll{
+ gap:12px !important;
+ padding:2px 2px 6px !important;
+}
+.mindmapFigure{
+ flex:0 0 86% !important;
+}
+.mindmapFigure img{
+ height:318px !important;
+ object-fit:contain !important;
+}
+.mindmapFigure figcaption{
+ padding:7px 10px !important;
+ font-size:11.8px !important;
+}
+
 </style>
 </head>
 <body>
@@ -2619,7 +2655,7 @@ modalContent.bachelorLernziel={
 modalContent.bachelorMindmap={
  title:"Mindmaps aus Sortieraktivitäten",
  body:`<div class="mindmapGallery">
-  <p class="mindmapIntro">Aus der Sortiergrundlage entstehen unterschiedliche Ordnungen und fachliche Vernetzungen. Die Beispiele zeigen zuerst die Ausgangssituation und danach drei studentische Mindmap-Ausschnitte.</p>
+  <p class="mindmapIntro">Aus der Sortiergrundlage entstehen unterschiedliche Ordnungen und fachliche Vernetzungen. Die Beispiele geben einen Eindruck davon, wie unterschiedlich Studierendengruppen solche Mindmaps strukturieren.</p>
   <div class="mindmapScroll">
     <figure class="mindmapFigure">
       <img src="assets/mindmaps/01_ausgangssituation_sortiergrundlage.png" alt="Ausgangssituation der Sortiergrundlage">
@@ -2627,15 +2663,15 @@ modalContent.bachelorMindmap={
     </figure>
     <figure class="mindmapFigure">
       <img src="assets/mindmaps/02_studierenden_mindmap_gesamtuebersicht.png" alt="Gesamtübersicht einer Studierenden-Mindmap">
-      <figcaption>2 · Studierenden-Mindmap: Gesamtübersicht</figcaption>
+      <figcaption>2 · Beispiel einer Studierendengruppe</figcaption>
     </figure>
     <figure class="mindmapFigure">
       <img src="assets/mindmaps/03_studierenden_mindmap_ausschnitt_fachstruktur.png" alt="Ausschnitt einer Studierenden-Mindmap mit fachlicher Struktur">
-      <figcaption>3 · Ausschnitt: fachliche Strukturierung</figcaption>
+      <figcaption>3 · Beispiel einer weiteren Studierendengruppe</figcaption>
     </figure>
     <figure class="mindmapFigure">
       <img src="assets/mindmaps/04_studierenden_mindmap_ausschnitt_ordnung.png" alt="Ausschnitt einer Studierenden-Mindmap mit Ordnung und Vernetzung">
-      <figcaption>4 · Ausschnitt: Ordnung und Vernetzung</figcaption>
+      <figcaption>4 · Beispiel einer weiteren Studierendengruppe</figcaption>
     </figure>
   </div>
 </div>`
