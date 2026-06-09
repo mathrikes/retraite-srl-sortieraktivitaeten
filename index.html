@@ -2077,6 +2077,36 @@ body{
  display:none !important;
 }
 
+/* NUR ABSCHLUSSFOLIE: USA-Button im Postit-Stil unter den Fragen */
+#s5 .usaButton{
+ margin-top:14px;
+ align-self:flex-start;
+ display:inline-flex;
+ align-items:center;
+ gap:8px;
+ padding:9px 16px;
+ background:#FFF7C8;
+ border:1.5px dashed rgba(147,81,0,.55);
+ border-radius:14px;
+ color:var(--terracotta);
+ font-family:'Caveat',cursive;
+ font-weight:600;
+ font-size:19px;
+ line-height:1;
+ cursor:pointer;
+ box-shadow:2px 2px 0 rgba(42,33,24,.22);
+ transform:rotate(-.5deg);
+ transition:transform .15s ease, box-shadow .15s ease;
+}
+#s5 .usaButton:hover{
+ transform:rotate(0deg) translateY(-1px);
+ box-shadow:3px 3px 0 rgba(42,33,24,.3);
+ background:var(--gold-soft);
+}
+#s5 .usaButton .usaIcon{
+ font-size:18px;
+}
+
 
 /* NUR Folientitel: schwarze Titel in Handschrift wie Fazit-Kästen */
 .slide .h1,
@@ -2406,7 +2436,7 @@ body{
       <li>Nutzung, Tiefe und Zeitaufwand bleiben sehr unterschiedlich</li>
      </ul>
      <div class="popupRow" style="margin-top:10px">
-      <button class="popupBtn" onclick="openMaterial('Einblick / Beispiel','h5p/sek1_einblick/index.html')">🧩 Einblick / Beispiel</button>
+      <button class="popupBtn" onclick="openModal('moodleSekI')">🧩 Einblick / Beispiel</button>
      </div>
     </div>
 
@@ -2554,6 +2584,7 @@ body{
       <div class="frageCard3 card"><div class="frageNr3">3</div><p>Wie modellieren wir selbstregulierte Lernphasen in unserer eigenen Ausbildung glaubwürdig?</p></div>
       <div class="frageCard3 card"><div class="frageNr3">4</div><p>Wie bereiten wir angehende Lehrpersonen darauf vor, solche Phasen fachlich produktiv zu gestalten?</p></div>
     </div>
+    <button class="usaButton" onclick="openModal('usaGalerie')"><span class="usaIcon">📸</span><span>Übrigens: Grüsse aus Amerika</span></button>
    </div>
 
    <div class="abschlussSide2">
@@ -2708,6 +2739,43 @@ modalContent.bachelorMindmap={
     <figure class="mindmapFigure">
       <img src="assets/mindmaps/04_studierenden_mindmap_ausschnitt_ordnung.png" alt="Ausschnitt einer Studierenden-Mindmap mit Ordnung und Vernetzung">
       <figcaption>4 · Beispiel einer weiteren Studierendengruppe</figcaption>
+    </figure>
+  </div>
+</div>`
+};
+
+modalContent.moodleSekI={
+ title:"Beispielmodul: Form und Raum",
+ body:`<p class="quoteLead">Ein Einblick ins Material aus meiner Sek-I-Lehre &mdash; Beispielmodul zum Themenbereich «Form und Raum».</p>
+<p>Das Modul ist auf der Moodle-Plattform der PH Luzern hinterlegt und für Gäste zugänglich.</p>
+<p style="margin-top:14px"><a href="https://moodle.phlu.ch/mod/page/view.php?id=63509637" target="_blank" rel="noopener">→ Beispielmodul auf Moodle öffnen</a></p>
+<p class="sourceNote">Beim Einloggen den Gastschlüssel <strong>s1-mathematik</strong> verwenden.</p>`
+};
+
+modalContent.usaGalerie={
+ title:"Grüsse aus Amerika",
+ body:`<div class="mindmapGallery">
+  <p class="mindmapIntro">Ein kleines Mitbringsel &mdash; fünf Eindrücke aus meiner Zeit drüben.</p>
+  <div class="mindmapScroll">
+    <figure class="mindmapFigure">
+      <img src="assets/usa/usa1.jpg" alt="Eindruck aus Amerika 1">
+      <figcaption>1</figcaption>
+    </figure>
+    <figure class="mindmapFigure">
+      <img src="assets/usa/usa2.jpg" alt="Eindruck aus Amerika 2">
+      <figcaption>2</figcaption>
+    </figure>
+    <figure class="mindmapFigure">
+      <img src="assets/usa/usa3.jpg" alt="Eindruck aus Amerika 3">
+      <figcaption>3</figcaption>
+    </figure>
+    <figure class="mindmapFigure">
+      <img src="assets/usa/usa4.jpg" alt="Eindruck aus Amerika 4">
+      <figcaption>4</figcaption>
+    </figure>
+    <figure class="mindmapFigure">
+      <img src="assets/usa/usa5.jpg" alt="Eindruck aus Amerika 5">
+      <figcaption>5</figcaption>
     </figure>
   </div>
 </div>`
