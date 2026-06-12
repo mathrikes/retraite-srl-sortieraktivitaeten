@@ -2107,6 +2107,38 @@ body{
  font-size:18px;
 }
 
+/* USA-Galerie: kompaktes 4-Spalten-Raster im Popup */
+.usaGalleryGrid{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:8px;
+ padding:2px;
+}
+.usaFigure{
+ background:var(--paper);
+ border:1px solid var(--line);
+ border-radius:8px;
+ overflow:hidden;
+ box-shadow:0 2px 8px var(--shadow);
+}
+.usaFigure img{
+ display:block;
+ width:100%;
+ aspect-ratio:1/1;
+ height:auto;
+ object-fit:cover;
+ background:#fff;
+}
+.usaFigure.cropLower img{
+ object-position:center 75%;
+}
+.usaIntro{
+ font-size:12.8px;
+ line-height:1.4;
+ color:var(--ink);
+ margin-bottom:10px;
+}
+
 
 /* NUR Folientitel: schwarze Titel in Handschrift wie Fazit-Kästen */
 .slide .h1,
@@ -2584,7 +2616,7 @@ body{
       <div class="frageCard3 card"><div class="frageNr3">3</div><p>Wie modellieren wir selbstregulierte Lernphasen in unserer eigenen Ausbildung glaubwürdig?</p></div>
       <div class="frageCard3 card"><div class="frageNr3">4</div><p>Wie bereiten wir angehende Lehrpersonen darauf vor, solche Phasen fachlich produktiv zu gestalten?</p></div>
     </div>
-    <button class="usaButton" onclick="openModal('usaGalerie')"><span class="usaIcon">📸</span><span>und zum Abschluss...</span></button>
+    <button class="usaButton" onclick="openModal('usaGalerie')"><span class="usaIcon">📸</span><span>Übrigens: Grüsse aus Amerika</span></button>
    </div>
 
    <div class="abschlussSide2">
@@ -2754,30 +2786,24 @@ modalContent.moodleSekI={
 
 modalContent.usaGalerie={
  title:"Grüsse aus Amerika",
- body:`<div class="mindmapGallery">
-  <p class="mindmapIntro">Ein paar kleine Eindrücke...</p>
-  <div class="mindmapScroll">
-    <figure class="mindmapFigure">
-      <img src="assets/usa/usa1.jpg" alt="Eindruck aus Amerika 1">
-      <figcaption>1</figcaption>
-    </figure>
-    <figure class="mindmapFigure">
-      <img src="assets/usa/usa2.jpg" alt="Eindruck aus Amerika 2">
-      <figcaption>2</figcaption>
-    </figure>
-    <figure class="mindmapFigure">
-      <img src="assets/usa/usa3.jpg" alt="Eindruck aus Amerika 3">
-      <figcaption>3</figcaption>
-    </figure>
-    <figure class="mindmapFigure">
-      <img src="assets/usa/usa4.jpg" alt="Eindruck aus Amerika 4">
-      <figcaption>4</figcaption>
-    </figure>
-    <figure class="mindmapFigure">
-      <img src="assets/usa/usa5.jpg" alt="Eindruck aus Amerika 5">
-      <figcaption>5</figcaption>
-    </figure>
-  </div>
+ body:`<p class="usaIntro">Ein kleines Mitbringsel &mdash; 16 Eindrücke aus St. Paul.</p>
+<div class="usaGalleryGrid">
+  <figure class="usaFigure"><img src="assets/usa/usa1.jpg" alt="Eindruck aus Amerika 1"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa2.jpg" alt="Eindruck aus Amerika 2"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa3.jpg" alt="Eindruck aus Amerika 3"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa4.jpg" alt="Eindruck aus Amerika 4"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa5.jpg" alt="Eindruck aus Amerika 5"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa6.jpg" alt="Eindruck aus Amerika 6"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa7.jpg" alt="Eindruck aus Amerika 7"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa8.jpg" alt="Eindruck aus Amerika 8"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa9.jpg" alt="Eindruck aus Amerika 9"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa10.jpg" alt="Eindruck aus Amerika 10"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa11.jpg" alt="Eindruck aus Amerika 11"></figure>
+  <figure class="usaFigure cropLower"><img src="assets/usa/usa12.jpg" alt="Eindruck aus Amerika 12"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa13.jpg" alt="Eindruck aus Amerika 13"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa14.jpg" alt="Eindruck aus Amerika 14"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa15.jpg" alt="Eindruck aus Amerika 15"></figure>
+  <figure class="usaFigure"><img src="assets/usa/usa16.jpg" alt="Eindruck aus Amerika 16"></figure>
 </div>`
 };
 
