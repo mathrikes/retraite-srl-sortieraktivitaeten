@@ -2132,6 +2132,91 @@ body{
 .usaFigure.cropLower img{
  object-position:center 75%;
 }
+.usaFigure{
+ cursor:pointer;
+}
+
+/* USA-Lightbox: grosse Einzelansicht mit Blättern */
+#usaLightbox{
+ position:fixed;
+ inset:0;
+ background:rgba(31,25,18,.92);
+ z-index:800;
+ display:none;
+ align-items:center;
+ justify-content:center;
+}
+#usaLightbox.open{display:flex}
+#usaLightbox .lbStage{
+ position:relative;
+ width:100%;
+ height:100%;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:54px 70px 64px;
+}
+#usaLightbox img{
+ max-width:100%;
+ max-height:100%;
+ object-fit:contain;
+ border-radius:8px;
+ box-shadow:0 12px 40px rgba(0,0,0,.5);
+ background:#1a1510;
+}
+#usaLightbox .lbClose{
+ position:absolute;
+ top:16px;
+ right:20px;
+ width:40px;
+ height:40px;
+ border:none;
+ border-radius:50%;
+ background:rgba(255,253,248,.92);
+ color:var(--terracotta);
+ font-size:24px;
+ line-height:1;
+ cursor:pointer;
+ z-index:2;
+ box-shadow:0 3px 12px rgba(0,0,0,.35);
+}
+#usaLightbox .lbClose:hover{background:#fff}
+#usaLightbox .lbArrow{
+ position:absolute;
+ top:50%;
+ transform:translateY(-50%);
+ width:52px;
+ height:52px;
+ border:none;
+ border-radius:50%;
+ background:rgba(255,253,248,.88);
+ color:var(--terracotta);
+ font-size:26px;
+ line-height:1;
+ cursor:pointer;
+ z-index:2;
+ box-shadow:0 3px 14px rgba(0,0,0,.4);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+#usaLightbox .lbArrow:hover{background:#fff}
+#usaLightbox .lbPrev{left:18px}
+#usaLightbox .lbNext{right:18px}
+#usaLightbox .lbCounter{
+ position:absolute;
+ bottom:20px;
+ left:50%;
+ transform:translateX(-50%);
+ z-index:2;
+ background:rgba(31,25,18,.7);
+ color:rgba(247,242,232,.95);
+ font-family:'Source Sans 3',sans-serif;
+ font-size:13px;
+ font-weight:600;
+ padding:6px 16px;
+ border-radius:999px;
+}
 .usaIntro{
  font-size:12.8px;
  line-height:1.4;
@@ -2644,6 +2729,14 @@ body{
   </div>
 </div>
 
+<div id="usaLightbox" onclick="usaLightboxBgClick(event)">
+  <button class="lbClose" onclick="closeUsaLightbox()">×</button>
+  <button class="lbArrow lbPrev" onclick="usaLightboxStep(-1)">‹</button>
+  <div class="lbStage"><img id="usaLightboxImg" src="" alt="Eindruck aus Amerika"></div>
+  <button class="lbArrow lbNext" onclick="usaLightboxStep(1)">›</button>
+  <div class="lbCounter" id="usaLightboxCounter">1 / 16</div>
+</div>
+
 <button id="homeBtn" onclick="showSlide(0)">⌂ Startseite</button>
 <div id="nav"><button id="prevBtn" onclick="prevSlide()">← Zurück</button><div id="counter">Übersicht</div><button id="nextBtn" onclick="nextSlide()">Weiter →</button></div>
 <div id="modalOverlay" onclick="overlayClick(event)">
@@ -2788,28 +2881,59 @@ modalContent.usaGalerie={
  title:"Grüsse aus Amerika",
  body:`<p class="usaIntro">Ein kleines Mitbringsel &mdash; 16 Eindrücke aus St. Paul.</p>
 <div class="usaGalleryGrid">
-  <figure class="usaFigure"><img src="assets/usa/usa1.jpg" alt="Eindruck aus Amerika 1"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa2.jpg" alt="Eindruck aus Amerika 2"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa3.jpg" alt="Eindruck aus Amerika 3"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa4.jpg" alt="Eindruck aus Amerika 4"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa5.jpg" alt="Eindruck aus Amerika 5"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa6.jpg" alt="Eindruck aus Amerika 6"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa7.jpg" alt="Eindruck aus Amerika 7"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa8.jpg" alt="Eindruck aus Amerika 8"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa9.jpg" alt="Eindruck aus Amerika 9"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa10.jpg" alt="Eindruck aus Amerika 10"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa11.jpg" alt="Eindruck aus Amerika 11"></figure>
-  <figure class="usaFigure cropLower"><img src="assets/usa/usa12.jpg" alt="Eindruck aus Amerika 12"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa13.jpg" alt="Eindruck aus Amerika 13"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa14.jpg" alt="Eindruck aus Amerika 14"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa15.jpg" alt="Eindruck aus Amerika 15"></figure>
-  <figure class="usaFigure"><img src="assets/usa/usa16.jpg" alt="Eindruck aus Amerika 16"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(0)"><img src="assets/usa/usa1.jpg" alt="Eindruck aus Amerika 1"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(1)"><img src="assets/usa/usa2.jpg" alt="Eindruck aus Amerika 2"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(2)"><img src="assets/usa/usa3.jpg" alt="Eindruck aus Amerika 3"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(3)"><img src="assets/usa/usa4.jpg" alt="Eindruck aus Amerika 4"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(4)"><img src="assets/usa/usa5.jpg" alt="Eindruck aus Amerika 5"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(5)"><img src="assets/usa/usa6.jpg" alt="Eindruck aus Amerika 6"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(6)"><img src="assets/usa/usa7.jpg" alt="Eindruck aus Amerika 7"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(7)"><img src="assets/usa/usa8.jpg" alt="Eindruck aus Amerika 8"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(8)"><img src="assets/usa/usa9.jpg" alt="Eindruck aus Amerika 9"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(9)"><img src="assets/usa/usa10.jpg" alt="Eindruck aus Amerika 10"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(10)"><img src="assets/usa/usa11.jpg" alt="Eindruck aus Amerika 11"></figure>
+  <figure class="usaFigure cropLower" onclick="openUsaLightbox(11)"><img src="assets/usa/usa12.jpg" alt="Eindruck aus Amerika 12"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(12)"><img src="assets/usa/usa13.jpg" alt="Eindruck aus Amerika 13"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(13)"><img src="assets/usa/usa14.jpg" alt="Eindruck aus Amerika 14"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(14)"><img src="assets/usa/usa15.jpg" alt="Eindruck aus Amerika 15"></figure>
+  <figure class="usaFigure" onclick="openUsaLightbox(15)"><img src="assets/usa/usa16.jpg" alt="Eindruck aus Amerika 16"></figure>
 </div>`
 };
 
 function openModal(key){const item=modalContent[key];if(!item)return;document.getElementById('modalTitle').innerHTML=item.title;document.getElementById('modalBody').innerHTML=item.body;document.getElementById('modalOverlay').style.display='flex'}
 function closeModal(){document.getElementById('modalOverlay').style.display='none'}
 function overlayClick(e){if(e.target.id==='modalOverlay')closeModal()}
+
+/* USA-Lightbox */
+const usaTotal=16;
+let usaCurrent=0;
+function openUsaLightbox(i){
+ usaCurrent=i;
+ renderUsaLightbox();
+ document.getElementById('usaLightbox').classList.add('open');
+}
+function renderUsaLightbox(){
+ const img=document.getElementById('usaLightboxImg');
+ img.src=`assets/usa/usa${usaCurrent+1}.jpg`;
+ img.alt=`Eindruck aus Amerika ${usaCurrent+1}`;
+ document.getElementById('usaLightboxCounter').textContent=`${usaCurrent+1} / ${usaTotal}`;
+}
+function usaLightboxStep(dir){
+ usaCurrent=(usaCurrent+dir+usaTotal)%usaTotal;
+ renderUsaLightbox();
+}
+function closeUsaLightbox(){
+ document.getElementById('usaLightbox').classList.remove('open');
+}
+function usaLightboxBgClick(e){
+ if(e.target.id==='usaLightbox' || e.target.classList.contains('lbStage'))closeUsaLightbox();
+}
+window.addEventListener('keydown',e=>{
+ if(!document.getElementById('usaLightbox').classList.contains('open'))return;
+ if(e.key==='ArrowRight')usaLightboxStep(1);
+ if(e.key==='ArrowLeft')usaLightboxStep(-1);
+ if(e.key==='Escape')closeUsaLightbox();
+});
 </script>
 </body>
 </html>
